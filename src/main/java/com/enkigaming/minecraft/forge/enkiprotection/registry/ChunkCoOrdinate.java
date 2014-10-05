@@ -1,5 +1,11 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import net.minecraft.world.chunk.Chunk;
+
+/**
+ * Representation of the information required to reference a specific chunk.
+ * Immutable.
+ */
 public class ChunkCoOrdinate
 {
     public ChunkCoOrdinate(int x, int z, int worldID)
@@ -59,6 +65,12 @@ public class ChunkCoOrdinate
      * Gets the highest-value Z coördinate within the chunk.
      */
     public int getMaxZBlock()
+    {}
+    
+    /**
+     * Gets the chunk this represents, or null if it is not retrievable for whatever reason.
+     */
+    public Chunk getChunk()
     {}
 
     @Override
