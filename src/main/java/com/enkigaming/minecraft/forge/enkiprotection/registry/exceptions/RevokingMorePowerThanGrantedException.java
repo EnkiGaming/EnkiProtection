@@ -5,28 +5,18 @@ import java.util.UUID;
 
 public class RevokingMorePowerThanGrantedException extends Exception
 {
-    public RevokingMorePowerThanGrantedException(Claim claim, UUID playerID, int powerAttemptingToRevoke, int powerPlayerHasGranted)
-    {
-        this.claim = claim;
-        player = playerID;
-        this.powerAttemptingToRevoke = powerAttemptingToRevoke;
-        this.powerPlayerHasGranted = powerPlayerHasGranted;
-    }
-    
-    Claim claim;
-    UUID player;
-    int powerAttemptingToRevoke;
-    int powerPlayerHasGranted;
-    
-    public Claim getClaim()
-    { return claim; }
-    
-    public UUID getPlayerID()
-    { return player; }
-    
-    public int getPowerAttemptingToRevoke()
-    { return powerAttemptingToRevoke; }
-    
-    public int getPowerPlayerHasGranted()
-    { return powerPlayerHasGranted; }
+	private static final long serialVersionUID = 1L;
+	
+	public final Claim claim;
+	public final UUID player;
+	public final int powerAttemptingToRevoke;
+	public final int powerPlayerHasGranted;
+
+	public RevokingMorePowerThanGrantedException(Claim c, UUID playerID, int rev, int has)
+	{
+		claim = c;
+		player = playerID;
+		powerAttemptingToRevoke = rev;
+		powerPlayerHasGranted = has;
+	}
 }

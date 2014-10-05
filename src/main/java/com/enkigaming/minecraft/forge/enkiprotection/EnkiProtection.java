@@ -1,18 +1,20 @@
 package com.enkigaming.minecraft.forge.enkiprotection;
 
-import cpw.mods.fml.common.Mod;
+import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.common.*;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = EnkiProtection.MODID, version = EnkiProtection.VERSION)
+@Mod(modid = EnkiProtection.MODID, name = "EnkiProtection", version = "1.0", acceptableRemoteVersions = "*")
 public class EnkiProtection
 {
     public static final String MODID = "EnkiProtection";
-    public static final String VERSION = "1.0";
     
     @EventHandler
-    public void init(FMLInitializationEvent event)
+    public void preInit(FMLPreInitializationEvent e)
     {
-        
+    	EnkiProtectionEventHandler eh = new EnkiProtectionEventHandler();
+    	MinecraftForge.EVENT_BUS.register(eh);
+    	FMLCommonHandler.instance().bus().register(eh);
     }
 }

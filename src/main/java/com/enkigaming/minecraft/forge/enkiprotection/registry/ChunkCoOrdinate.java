@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 /**
@@ -8,95 +9,49 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class ChunkCoOrdinate
 {
-    public ChunkCoOrdinate(int x, int z, int worldID)
-    {
-        xCoOrd = x;
-        zCoOrd = z;
-        this.worldID = worldID;
-    }
-    
-    final int xCoOrd;
-    final int zCoOrd;
-    final int worldID;
-    
-    /**
-     * Gets the chunk's X coördinate
-     */
-    public int getXCoOrd()
-    {}
-    
-    /**
-     * Gets the chunk's Z coördinate
-     */
-    public int getZCoOrd()
-    {}
-    
-    /**
-     * Gets the ID of the world the chunk is in.
-     */
-    public int getWorldID()
-    {}
-    
-    /**
-     * Gets the name of the world the chunk is in.
-     */
-    public String getWorldName() // Is this possible?
-    {}
-    
-    /**
-     * Gets the lowest-value X coördinate within the chunk.
-     */
-    public int getMinXBlock()
-    {}
-    
-    /**
-     * Gets the highest-value X coördinate within the chunk.
-     */
-    public int getMaxXBlock()
-    {}
-    
-    /**
-     * Gets the lowest-value Z coördinate within the chunk.
-     */
-    public int getMinZBlock()
-    {}
-    
-    /**
-     * Gets the highest-value Z coördinate within the chunk.
-     */
-    public int getMaxZBlock()
-    {}
-    
-    /**
-     * Gets the chunk this represents, or null if it is not retrievable for whatever reason.
-     */
-    public Chunk getChunk()
-    {}
+	public final int posX;
+	public final int posZ;
+	public final int worldID;
+	
+	public ChunkCoOrdinate(int x, int z, int wid)
+	{
+		posX = x;
+		posZ = z;
+		worldID = wid;
+	}
+	
+	/**
+	 * Gets the highest-value X coördinate within the chunk.
+	 */
+	public int getMaxXBlock()
+	{ return posX + 15; }
+	
+	/**
+	 * Gets the highest-value Z coördinate within the chunk.
+	 */
+	public int getMaxZBlock()
+	{ return posZ + 15; }
+	
+	/**
+	 * Gets the chunk from World
+	 */
+	public Chunk getChunk(World w)
+	{ return w.getChunkFromChunkCoords(posX, posZ); }
 
-    @Override
-    public boolean equals(Object obj)
-    {
-        if(obj == null)
-            return false;
-        if(getClass() != obj.getClass())
-            return false;
-        final ChunkCoOrdinate other = (ChunkCoOrdinate) obj;
-        if(this.xCoOrd != other.xCoOrd)
-            return false;
-        if(this.zCoOrd != other.zCoOrd)
-            return false;
-        if(this.worldID != other.worldID)
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = 3;
-        hash = 31 * hash + this.xCoOrd;
-        hash = 31 * hash + this.zCoOrd;
-        hash = 31 * hash + this.worldID;
-        return hash;
-    }
+	public boolean equals(Object obj)
+	{
+		if(obj == null || !(obj instanceof ChunkCoOrdinate))
+			return false;
+		ChunkCoOrdinate other = (ChunkCoOrdinate) obj;
+		return other.posX == posX && other.posZ == posZ && other.worldID == worldID;
+	}
+	
+	public int hashCode()
+	{
+		int hash = 3;
+		hash = 31 * hash + posX;
+		hash = 31 * hash + posZ;
+		hash = 31 * hash + worldID;
+		return hash;
+	}
 }

@@ -1,29 +1,21 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.ChunkCoOrdinate;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.*;
 
 public class ChunkNotInClaimException extends Exception
 {
-    public ChunkNotInClaimException(Claim claimChunkIsNotIn, Claim claimChunkIsIn, ChunkCoOrdinate chunk)
-    {
-        super();
-        
-        notIn = claimChunkIsNotIn;
-        in = claimChunkIsIn;
-        this.chunk = chunk;
-    }
-    
-    Claim notIn;
-    Claim in;
-    ChunkCoOrdinate chunk;
-    
-    public Claim getClaimChunkIsNotIn()
-    { return notIn; }
-    
-    public Claim getClaimChunkIsIn()
-    { return in; }
-    
-    public ChunkCoOrdinate getChunk()
-    { return chunk; }
+	private static final long serialVersionUID = 1L;
+	
+	public final Claim notIn;
+	public final Claim in;
+	public final ChunkCoOrdinate chunk;
+	
+	public ChunkNotInClaimException(Claim c1, Claim c2, ChunkCoOrdinate c)
+	{
+		super();
+		
+		notIn = c1;
+		in = c2;
+		chunk = c;
+	}
 }

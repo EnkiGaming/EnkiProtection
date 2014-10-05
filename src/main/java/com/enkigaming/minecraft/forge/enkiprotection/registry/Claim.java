@@ -1,14 +1,10 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.GrantingMoreClaimPowerThanHaveException;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.chunk.Chunk;
+
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.*;
 
 public class Claim
 {

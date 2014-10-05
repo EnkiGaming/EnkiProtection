@@ -4,23 +4,16 @@ import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 
 public class RevokingMorePowerThanAvailableException extends Exception
 {
-    public RevokingMorePowerThanAvailableException(Claim claim, int availablePower, int powerAttemptingToRevoke)
-    {
-        this.claim = claim;
-        this.availablePower = availablePower;
-        this.powerAttemptingToRevoke = powerAttemptingToRevoke;
-    }
-    
-    Claim claim;
-    int availablePower;
-    int powerAttemptingToRevoke;
-    
-    public Claim getClaim()
-    { return claim; }
-    
-    public int getAvailablePower()
-    { return availablePower; }
-    
-    public int getPowerAttemptingToRevoke()
-    { return powerAttemptingToRevoke; }
+	private static final long serialVersionUID = 1L;
+	
+	public final Claim claim;
+	public final int availablePower;
+	public final int powerAttemptingToRevoke;
+	
+	public RevokingMorePowerThanAvailableException(Claim c, int pow, int att)
+	{
+		claim = c;
+		availablePower = pow;
+		powerAttemptingToRevoke = att;
+	}
 }

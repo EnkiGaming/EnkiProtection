@@ -1,16 +1,13 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerException;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.*;
 
 public class ClaimRegistry
 {
