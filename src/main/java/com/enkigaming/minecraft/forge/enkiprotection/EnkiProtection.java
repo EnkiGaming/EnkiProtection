@@ -10,9 +10,13 @@ public class EnkiProtection
 {
     public static final String MODID = "EnkiProtection";
     
+    public static EnkiProtectionConfig config;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent e)
     {
+    	config = new EnkiProtectionConfig(e);
+    	
     	EnkiProtectionEventHandler eh = new EnkiProtectionEventHandler();
     	MinecraftForge.EVENT_BUS.register(eh);
     	FMLCommonHandler.instance().bus().register(eh);

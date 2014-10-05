@@ -48,13 +48,7 @@ public class Claim
     
     String welcomeMessage;
     
-    boolean allowExplosions;
-    boolean allowFriendlyCombat;
-    boolean allowPlayerCombat;
-    boolean allowCombat;
-    boolean allowNonAllyEntry;
-    boolean allowNonAllyRightClick;
-    boolean allowNonAllyBreakOrPlaceBlocks;
+    
     
     /**
      * Map of player UUIDs to how much power they have granted the claim. 
