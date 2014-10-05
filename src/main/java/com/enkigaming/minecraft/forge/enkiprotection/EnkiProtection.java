@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection;
 
+import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
