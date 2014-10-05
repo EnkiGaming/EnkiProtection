@@ -2,7 +2,7 @@ package com.enkigaming.minecraft.forge.enkiprotection.utils;
 
 public class Utils
 {
-    public boolean stringParsesToTrue(String string)
+    public static boolean stringParsesToTrue(String string)
     {
         string = string.trim();
         
@@ -12,10 +12,11 @@ public class Utils
             || string.equalsIgnoreCase("pos")
             || string.equalsIgnoreCase("t")
             || string.equalsIgnoreCase("y")
-            || string.equalsIgnoreCase("p");
+            || string.equalsIgnoreCase("p")
+            || string.equalsIgnoreCase("1");
     }
     
-    public boolean stringParsesToFalse(String string)
+    public static boolean stringParsesToFalse(String string)
     {
         string = string.trim();
         
@@ -24,6 +25,7 @@ public class Utils
             || string.equalsIgnoreCase("negative")
             || string.equalsIgnoreCase("neg")
             || string.equalsIgnoreCase("f")
-            || string.equalsIgnoreCase("n");
+            || string.equalsIgnoreCase("n")
+            || string.equalsIgnoreCase("0");
     }
 }

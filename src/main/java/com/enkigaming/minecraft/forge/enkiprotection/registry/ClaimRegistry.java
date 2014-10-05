@@ -14,10 +14,10 @@ import net.minecraft.world.chunk.Chunk;
 
 public class ClaimRegistry
 {
-    public ClaimRegistry(String folderPath)
+    public ClaimRegistry(File saveFolder)
     {}
     
-    String folderPath;
+    File saveFolder;
     
     Map<ChunkCoOrdinate, UUID> chunkClaims; // The chunk coördinates mapped to the UUID of the claim it's in.
     Map<UUID, Claim> claims; // All claims, using someClaim.getID() as the key.
