@@ -18,6 +18,7 @@ public class ClaimRegistry
     
     Map<ChunkCoOrdinate, UUID> chunkClaims; // The chunk coördinates mapped to the UUID of the claim it's in.
     Map<UUID, Claim> claims; // All claims, using someClaim.getID() as the key.
+    Map<UUID, Integer> playerClaimPowers; // How much power every player has to grant to claims.
     
     public Collection<Claim> getClaims()
     {}
@@ -64,10 +65,46 @@ public class ClaimRegistry
     public Collection<Claim> getClaimsPlayerIsBannedFrom(EntityPlayer player)
     {}
     
+    public Collection<Claim> getClaimsPlayerHasGrantedPowerTo(UUID playerID)
+    {}
+    
+    public Collection<Claim> getClaimsPlayerHasGrantedPowerTo(EntityPlayer player)
+    {}
+    
     public void claimChunk(UUID claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
     {}
     
     public void claimChunk(String claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
+    {}
+    
+    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
+    {}
+    
+    public void unclaimChunk(UUID claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {}
+    
+    public void unclaimChunk(String claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {}
+    
+    public void unclaimChunk(Claim claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {}
+    
+    public void addClaimPower(UUID playerID, int amount)
+    {}
+    
+    public void addClaimPower(EntityPlayer player, int amount)
+    {}
+    
+    public boolean removeClaimPower(UUID playerID, int amount)
+    {}
+    
+    public boolean removeClaimPower(EntityPlayer player, int amount)
+    {}
+    
+    public boolean setClaimPower(UUID playerID, int amount)
+    {}
+    
+    public boolean setClaimPower(EntityPlayer player, int amount)
     {}
     
     /**
