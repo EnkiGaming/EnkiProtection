@@ -1,5 +1,8 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.GrantingMoreClaimPowerThanHaveException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -11,11 +14,12 @@ public class Claim
 {
     public static class PowerRevocation
     {
-        public PowerRevocation(int amount)
+        public PowerRevocation(int amount, Date timeToForceRevoke)
         {}
         
         final int amount;
         final Date timeStarted;
+        final Date timeToForceRevoke;
         
         public int setAmount(int newAmount)
         {}
@@ -24,6 +28,9 @@ public class Claim
         {}
         
         public Date getTimeStarted()
+        {}
+        
+        public Date getTimeToForceRevoke()
         {}
     }
     
@@ -121,12 +128,26 @@ public class Claim
     // Players may change the amount they revoke. If they increase it, the increase is added as a second revoke that
     // then takes the full 5 days.
     //
-    // Checks for whether the time has run out should run on server start-up, and then once every two hours thenceforth.
+    // Checks for whether the time has run out should run on server start-up, and then once every hour thenceforth.
     
-    public boolean revokePower(UUID playerRevoking, int amount) throws RevokingMorePowerThanGrantedException
+    public boolean revokePower(UUID playerRevoking, int amount) throws RevokingMorePowerThanGrantedException,
+                                                                       RevokingMorePowerThanAvailableException
     {}
     
-    public boolean revokePower(EntityPlayer playerRevoking, int amount) throws RevokingMorePowerThanGrantedException
+    public boolean revokePower(EntityPlayer playerRevoking, int amount) throws RevokingMorePowerThanGrantedException,
+                                                                               RevokingMorePowerThanAvailableException
+    {}
+    
+    public boolean queueRevocation(UUID playerRevoking, int amount) // default to 120 hours (5 days)
+    {}
+    
+    public boolean queueRevocation(EntityPlayer playerRevoking, int amount) // default to 120 hours (5 days)
+    {}
+    
+    public boolean queueRevocation(UUID playerRevoking, int amount, int inNumberOfHours)
+    {}
+    
+    public boolean queueRevocation(EntityPlayer playerRevoking, int amount, int inNumberOfHours)
     {}
     
     public boolean changeRevokingAmount(UUID playerRevoking, int amount)

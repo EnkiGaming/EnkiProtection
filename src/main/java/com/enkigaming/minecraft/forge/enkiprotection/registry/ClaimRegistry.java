@@ -1,5 +1,8 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -71,13 +74,16 @@ public class ClaimRegistry
     public Collection<Claim> getClaimsPlayerHasGrantedPowerTo(EntityPlayer player)
     {}
     
-    public void claimChunk(UUID claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
+    public void claimChunk(UUID claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
+                                                                     ChunkAlreadyClaimedException
     {}
     
-    public void claimChunk(String claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
+    public void claimChunk(String claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
+                                                                       ChunkAlreadyClaimedException
     {}
     
-    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException, ChunkAlreadyClaimedException
+    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
+                                                                      ChunkAlreadyClaimedException
     {}
     
     public void unclaimChunk(UUID claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException

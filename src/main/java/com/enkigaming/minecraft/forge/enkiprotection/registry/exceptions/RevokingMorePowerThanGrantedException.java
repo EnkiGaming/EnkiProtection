@@ -1,5 +1,6 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
+import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 import java.util.UUID;
 
 public class RevokingMorePowerThanGrantedException extends Exception

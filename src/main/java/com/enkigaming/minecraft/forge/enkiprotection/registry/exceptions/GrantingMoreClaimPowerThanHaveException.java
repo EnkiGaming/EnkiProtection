@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
