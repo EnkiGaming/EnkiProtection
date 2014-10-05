@@ -1,24 +1,35 @@
-package com.enkigaming.minecraft.forge.enkiprotection.factions;
+package com.enkigaming.minecraft.forge.enkiprotection.registry;
+
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
+import java.io.File;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 public class ClaimRegistry
 {
-	/* Commented everything, because of those errors :P
     public ClaimRegistry(String folderPath)
     {}
     
     String folderPath;
     
-    Map<ChunkPos, UUID> chunkClaims; // The chunk coördinates mapped to the UUID of the claim it's in.
+    Map<ChunkCoOrdinate, UUID> chunkClaims; // The chunk coördinates mapped to the UUID of the claim it's in.
     Map<UUID, Claim> claims; // All claims, using someClaim.getID() as the key.
     Map<UUID, Integer> playerClaimPowers; // How much power every player has to grant to claims.
     
     public Collection<Claim> getClaims()
     {}
     
-    public Map<ChunkPos, UUID> getChunkClaims()
+    public Map<ChunkCoOrdinate, UUID> getChunkClaims()
     {}
     
-    public Collection<ChunkPos> getClaimedChunks()
+    public Collection<ChunkCoOrdinate> getClaimedChunks()
     {}
     
     public Claim getClaimAtBlock(int blockX, int blockZ, World world)
@@ -63,25 +74,25 @@ public class ClaimRegistry
     public Collection<Claim> getClaimsPlayerHasGrantedPowerTo(EntityPlayer player)
     {}
     
-    public void claimChunk(UUID claim, ChunkPos chunk) throws NotEnoughClaimPowerException,
+    public void claimChunk(UUID claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
                                                                      ChunkAlreadyClaimedException
     {}
     
-    public void claimChunk(String claim, ChunkPos chunk) throws NotEnoughClaimPowerException,
+    public void claimChunk(String claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
                                                                        ChunkAlreadyClaimedException
     {}
     
-    public void claimChunk(Claim claim, ChunkPos chunk) throws NotEnoughClaimPowerException,
+    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
                                                                       ChunkAlreadyClaimedException
     {}
     
-    public void unclaimChunk(UUID claim, ChunkPos chunk) throws ChunkNotInClaimException
+    public void unclaimChunk(UUID claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
     {}
     
-    public void unclaimChunk(String claim, ChunkPos chunk) throws ChunkNotInClaimException
+    public void unclaimChunk(String claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
     {}
     
-    public void unclaimChunk(Claim claim, ChunkPos chunk) throws ChunkNotInClaimException
+    public void unclaimChunk(Claim claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
     {}
     
     public void addClaimPower(UUID playerID, int amount)
@@ -101,8 +112,7 @@ public class ClaimRegistry
     
     public boolean setClaimPower(EntityPlayer player, int amount)
     {}
-     */
-	
+    
     /**
      * Saves the contents of the registry to files in the folder at the stored folder path, over-writing them if
      * already present.
@@ -132,5 +142,4 @@ public class ClaimRegistry
     
     protected void loadDefaultClaims()
     {}
-   
 }
