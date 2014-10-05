@@ -5,19 +5,31 @@ import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-public class EnkiProtectionConfig
+public class EPConfig
 {
 	private Configuration config;
 	
 	public Factions factions;
 	
-	public EnkiProtectionConfig(FMLPreInitializationEvent e)
+	public EPConfig(FMLPreInitializationEvent e)
 	{
 		config = new Configuration(new File(e.getModConfigurationDirectory(), "EnkiProtection.cfg"));
 		
 		factions = new Factions();
 		
 		config.save();
+	}
+	
+	public class General extends Category
+	{
+		public final String motd;
+		
+		public General()
+		{
+			super("general");
+			
+			motd = getString("motd", "Wellcome to the EnkiGaming TDT server!");
+		}
 	}
 	
 	public class Factions extends Category
@@ -48,6 +60,9 @@ public class EnkiProtectionConfig
 		
 		public Category(String s)
 		{ ID = s; }
+		
+		public String getString(String key, String def, String... comment)
+		{ return config.getString(key, ID, def, getComment(comment)); }
 		
 		public boolean getBool(String key, boolean def, String... comment)
 		{ return config.getBoolean(key, ID, def, getComment(comment)); }

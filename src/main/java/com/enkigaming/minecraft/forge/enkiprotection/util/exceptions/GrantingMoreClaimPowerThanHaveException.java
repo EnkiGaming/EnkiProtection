@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
+package com.enkigaming.minecraft.forge.enkiprotection.util.exceptions;
 
 import java.util.UUID;
 

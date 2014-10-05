@@ -1,5 +1,6 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.util;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -7,17 +8,17 @@ import net.minecraft.world.chunk.Chunk;
  * Representation of the information required to reference a specific chunk.
  * Immutable.
  */
-public class ChunkCoOrdinate
+public class ChunkPos
 {
 	public final int posX;
 	public final int posZ;
-	public final int worldID;
+	public final int dim;
 	
-	public ChunkCoOrdinate(int x, int z, int wid)
+	public ChunkPos(int x, int z, int wid)
 	{
 		posX = x;
 		posZ = z;
-		worldID = wid;
+		dim = wid;
 	}
 	
 	/**
@@ -32,6 +33,9 @@ public class ChunkCoOrdinate
 	public int getMaxZBlock()
 	{ return posZ + 15; }
 	
+	public World getWorld(MinecraftServer s)
+	{ return s.worldServers[dim]; }
+	
 	/**
 	 * Gets the chunk from World
 	 */
@@ -39,19 +43,17 @@ public class ChunkCoOrdinate
 	{ return w.getChunkFromChunkCoords(posX, posZ); }
 
 	public boolean equals(Object obj)
-	{
-		if(obj == null || !(obj instanceof ChunkCoOrdinate))
-			return false;
-		ChunkCoOrdinate other = (ChunkCoOrdinate) obj;
-		return other.posX == posX && other.posZ == posZ && other.worldID == worldID;
-	}
+	{ return obj != null && obj instanceof ChunkPos && equalsChunkCoord((ChunkPos)obj); }
+	
+	public boolean equalsChunkCoord(ChunkPos other)
+	{ return other.posX == posX && other.posZ == posZ && other.dim == dim; }
 	
 	public int hashCode()
 	{
 		int hash = 3;
 		hash = 31 * hash + posX;
 		hash = 31 * hash + posZ;
-		hash = 31 * hash + worldID;
+		hash = 31 * hash + dim;
 		return hash;
 	}
 }
