@@ -7,6 +7,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import java.io.File;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.chunk.Chunk;
 
 @Mod(modid = EnkiProtection.MODID, name = EnkiProtection.NAME, version = EnkiProtection.VERSION, acceptableRemoteVersions = "*")
@@ -16,6 +17,7 @@ public class EnkiProtection
     public static final String MODID = "EnkiProtection";
     public static final String VERSION = "1.0";
     
+    @Mod.Instance("EnkiProtection")
     static EnkiProtection instance;
     File saveFolder;
     
@@ -42,7 +44,7 @@ public class EnkiProtection
     
     private void loadData()
     {
-        
+
     }
     
     private void registerEvents()
