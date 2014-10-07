@@ -26,7 +26,21 @@ public class PlayerMovedChunksHandler
             ChunkPosition idealTpBackLocation = new ChunkPosition(oldChunkLowerCorner.chunkPosX + 7, player.serverPosY, oldChunkLowerCorner.chunkPosZ + 7);
             ChunkPosition tpBackLocation = getNearestSafePlaceToTpToInChunk(idealTpBackLocation.chunkPosX, idealTpBackLocation.chunkPosY, idealTpBackLocation.chunkPosZ, player.worldObj);
             
-            event.entity.setPosition(tpBackLocation.chunkPosX, tpBackLocation.chunkPosY, tpBackLocation.chunkPosZ);
+            if(tpBackLocation == null) // if no save areas to tp the player to were found at all in the chunk they were in
+            {
+                ChunkPosition lowestCornerInChunk = Utils.getLowerBoundBlockBorderOfChunk(event.oldChunkX, event.oldChunkZ);
+                if(player.posY < 0)
+                    tpBackLocation = new ChunkPosition(lowestCornerInChunk.chunkPosX + 7, -3, lowestCornerInChunk.chunkPosX + 7);
+                else
+                    tpBackLocation = new ChunkPosition(lowestCornerInChunk.chunkPosX + 7, 257, lowestCornerInChunk.chunkPosX + 7);
+                
+                // Tp to roughly middle of chunk two blocks above build limit. Realistically, this should only ever
+                // happen where the player was in a chunk completely full of blocks from bedrock to build limit, and
+                // thus either already at the top of the chunk, or falling in the void. In which case, they ded.
+            }
+                
+            
+            event.entity.setPosition(tpBackLocation.chunkPosX + 0.5, tpBackLocation.chunkPosY + 0.5, tpBackLocation.chunkPosZ + 0.5);
             
             // This may fire infinitely if the player is somehow already in a chunk that they're not supposed to be in,
             // and try walking into another chunk they're not supposed to be in.
