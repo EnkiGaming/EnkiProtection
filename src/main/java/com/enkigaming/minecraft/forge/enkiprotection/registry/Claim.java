@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.chunk.Chunk;
 
 public class Claim
 {
@@ -57,7 +56,8 @@ public class Claim
     boolean allowPlayerCombat;
     boolean allowCombat;
     boolean allowNonAllyEntry;
-    boolean allowNonAllyRightClick;
+    boolean allowNonAllyInteractWithBlocks;
+    boolean allowNonAllyInteractWithEntities;
     boolean allowNonAllyBreakOrPlaceBlocks;
     
     /**
@@ -171,6 +171,12 @@ public class Claim
     public boolean nonAlliesAllowedEntry()
     {}
     
+    public boolean nonAlliesCanInteractWithBlocks()
+    {}
+    
+    public boolean nonAlliesCanInteractWithEntities()
+    {}
+    
     public boolean canFight(UUID attackingPlayer, UUID playerBeingAttacked)
     {}
     
@@ -183,10 +189,16 @@ public class Claim
     public boolean canEnter(EntityPlayer enteringPlayer)
     { return canEnter(enteringPlayer.getGameProfile().getId()); }
     
-    public boolean canRightClickIn(UUID rightClickingPlayer)
+    public boolean canInteractWithBlocksIn(UUID rightClickingPlayer)
     {}
     
-    public boolean canRightClickIn(EntityPlayer rightClickingPlayer)
+    public boolean canInteractWithBlocksIn(EntityPlayer rightClickingPlayer)
+    {}
+    
+    public boolean canInteractWithEntitiesIn(UUID rightClickingPlayer)
+    {}
+    
+    public boolean canInteractWithEntitiesIn(EntityPlayer rightClickingPlayer)
     {}
     
     public boolean canBreakOrPlaceBlocks(UUID placingOrBreakingPlayer)

@@ -3,12 +3,8 @@ package com.enkigaming.minecraft.forge.enkiprotection;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import java.io.File;
-import net.minecraft.world.ChunkPosition;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.chunk.Chunk;
 
 @Mod(modid = EnkiProtection.MODID, name = EnkiProtection.NAME, version = EnkiProtection.VERSION, acceptableRemoteVersions = "*")
 public class EnkiProtection
@@ -38,13 +34,20 @@ public class EnkiProtection
     
     private void initialiseRegistries()
     {
-        claimRegistry = new ClaimRegistry(saveFolder);
         permissions = new Permissions(saveFolder);
+        claimRegistry = new ClaimRegistry(saveFolder);
     }
     
     private void loadData()
     {
-
+        permissions.load();
+        claimRegistry.load();
+    }
+    
+    private void saveData()
+    {
+        permissions.save();
+        claimRegistry.save();
     }
     
     private void registerEvents()
