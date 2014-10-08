@@ -1,10 +1,12 @@
 package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
+import com.enkigaming.minecraft.forge.enkiprotection.Strings;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -17,10 +19,17 @@ public class PlayerMovedChunksHandler
         if(event.entity == null || !(event.entity instanceof EntityPlayer))
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtChunk(event.newChunkX, event.newChunkZ, event.entity.worldObj);
         EntityPlayer player = (EntityPlayer)event.entity;
         
-        if(!claim.canEnter((EntityPlayer)event.entity))
+        // This handler isn't intended for players changing chunks in the process of respawning. Handling that in the
+        // same way results in weirdness. For the handler that handles players ending up a chunk they're not allowed to
+        // be in once they respawn, see PlayerDeathHandler
+        if(Utils.playerIsCurrentlyRespawning(player.getGameProfile().getId()))
+            return;
+        
+        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtChunk(event.newChunkX, event.newChunkZ, player.worldObj);
+        
+        if(claim != null && !claim.canEnter(player))
         {
             ChunkPosition oldChunkLowerCorner = Utils.getLowerBoundBlockBorderOfChunk(event.oldChunkX, event.oldChunkZ);
             ChunkPosition idealTpBackLocation = new ChunkPosition(oldChunkLowerCorner.chunkPosX + 7, player.serverPosY, oldChunkLowerCorner.chunkPosZ + 7);
@@ -40,7 +49,8 @@ public class PlayerMovedChunksHandler
             }
                 
             
-            event.entity.setPosition(tpBackLocation.chunkPosX + 0.5, tpBackLocation.chunkPosY + 0.5, tpBackLocation.chunkPosZ + 0.5);
+            player.setPosition(tpBackLocation.chunkPosX + 0.5, tpBackLocation.chunkPosY + 0.5, tpBackLocation.chunkPosZ + 0.5);
+            player.addChatMessage(new ChatComponentText(Strings.getStringPlayerMayNotEnterClaim(claim.getName())));
             
             // This may fire infinitely if the player is somehow already in a chunk that they're not supposed to be in,
             // and try walking into another chunk they're not supposed to be in.

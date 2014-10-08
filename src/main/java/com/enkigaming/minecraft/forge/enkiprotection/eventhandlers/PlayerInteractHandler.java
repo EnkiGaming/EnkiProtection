@@ -1,10 +1,12 @@
 package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
+import com.enkigaming.minecraft.forge.enkiprotection.Strings;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -19,8 +21,11 @@ public class PlayerInteractHandler
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
         
-        if(!claim.canInteractWithBlocksIn(event.entityPlayer))
+        if(claim != null && !claim.canInteractWithBlocksIn(event.entityPlayer))
+        {
             event.setCanceled(true);
+            event.entityPlayer.addChatMessage(new ChatComponentText(Strings.getStringCantInteractWithBlocks(claim.getName())));
+        }
     }
     
     @SubscribeEvent
@@ -31,8 +36,11 @@ public class PlayerInteractHandler
 
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock((int)(event.target.posX + 0.5), (int)(event.target.posZ), event.target.worldObj);
 
-        if(!claim.canInteractWithEntitiesIn(event.entityPlayer))
+        if(claim != null && !claim.canInteractWithEntitiesIn(event.entityPlayer))
+        {
             event.setCanceled(true);
+            event.entityPlayer.addChatMessage(new ChatComponentText(Strings.getStringCantInteractWithEntities(claim.getName())));
+        }
     }
     
     @SubscribeEvent
@@ -42,8 +50,12 @@ public class PlayerInteractHandler
             return;
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock((int)(event.entity.posX + 0.5), (int)(event.entity.posZ + 0.5), event.entity.worldObj);
+        EntityPlayer player = (EntityPlayer)event.entityLiving;
         
-        if(!claim.canInteractWithEntitiesIn((EntityPlayer)event.entityLiving))
+        if(claim != null && !claim.canInteractWithEntitiesIn(player))
+        {
             event.setCanceled(true);
+            player.addChatMessage(new ChatComponentText(Strings.getStringCantInteractWithEntities(claim.getName())));
+        }
     }
 }

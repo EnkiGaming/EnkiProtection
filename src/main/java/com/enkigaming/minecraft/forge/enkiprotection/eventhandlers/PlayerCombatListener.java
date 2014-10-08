@@ -16,7 +16,7 @@ public class PlayerCombatListener
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.entity.serverPosX, event.entity.serverPosZ, event.entity.worldObj);
         
-        if(!claim.canFight((EntityPlayer)event.entityLiving, (EntityPlayer)event.entity))
+        if(claim != null && !claim.canFight((EntityPlayer)event.entityLiving, (EntityPlayer)event.entity))
             event.setCanceled(true);
     }
 }

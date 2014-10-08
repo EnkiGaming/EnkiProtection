@@ -35,7 +35,7 @@ public class ClaimRegistry
     public Claim getClaimAtBlock(int blockX, int blockZ, World world)
     {}
     
-    public Claim getClamAtBlock(Block block)
+    public Claim getClaimAtBlock(Block block)
     {}
     
     public Claim getClaimAtChunk(int chunkX, int chunkZ, World world)
@@ -111,6 +111,12 @@ public class ClaimRegistry
     {}
     
     public boolean setClaimPower(EntityPlayer player, int amount)
+    {}
+    
+    public boolean containsClaimWithName(String name)
+    {}
+    
+    public boolean containsClaimWithID(UUID id)
     {}
     
     /**
