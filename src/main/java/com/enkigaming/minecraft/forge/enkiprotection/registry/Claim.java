@@ -54,7 +54,7 @@ public class Claim
     boolean allowExplosions;
     boolean allowFriendlyCombat;
     boolean allowPlayerCombat;
-    boolean allowCombat;
+    boolean allowMobEntry; // Should allow friendly mobs regardless.
     boolean allowNonAllyEntry;
     boolean allowNonAllyInteractWithBlocks;
     boolean allowNonAllyInteractWithEntities;
@@ -159,13 +159,13 @@ public class Claim
     public boolean explosionsAreAllowed()
     {}
     
+    public boolean mobsCanEnter()
+    {}
+    
     public boolean membersAndAlliesAreAllowedToFight()
     {}
     
     public boolean playersAreAllowedToFight()
-    {}
-    
-    public boolean anythingIsAllowedToFight()
     {}
     
     public boolean nonAlliesAllowedEntry()
@@ -176,6 +176,9 @@ public class Claim
     
     public boolean nonAlliesCanInteractWithEntities()
     {}
+    
+    // public boolean mobCanEnter(???) < < < Implement this. Need to check what I need to check for.
+    // {}
     
     public boolean canFight(UUID attackingPlayer, UUID playerBeingAttacked)
     {}

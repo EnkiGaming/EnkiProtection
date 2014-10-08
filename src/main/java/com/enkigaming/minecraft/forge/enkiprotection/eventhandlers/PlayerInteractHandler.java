@@ -38,7 +38,7 @@ public class PlayerInteractHandler
     @SubscribeEvent
     public void onPlayerLeftClickEntity(LivingAttackEvent event)
     {
-        if(event.entityLiving == null || !(event.entityLiving instanceof EntityPlayer) || event.entity == null)
+        if(event.entityLiving == null || !(event.entityLiving instanceof EntityPlayer) || event.entity == null || event.entity instanceof EntityLivingBase)
             return;
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock((int)(event.entity.posX + 0.5), (int)(event.entity.posZ + 0.5), event.entity.worldObj);
