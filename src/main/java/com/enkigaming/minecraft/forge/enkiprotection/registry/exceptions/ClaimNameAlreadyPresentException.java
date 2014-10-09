@@ -15,10 +15,15 @@ public class ClaimNameAlreadyPresentException extends Exception
     final Claim claimThatCantUseName;
     final String name;
     
-    public Claim getOriginalClaimWithId()
+    public Claim getOriginalClaimWithName()
     { return claimAlreadyPresentWithName; }
     
-    public Claim getClaimThatCantUseId()
+    /**
+     * Returns the claim that was to be added to the registry, but can't because there's already a claim with that name.
+     *
+     * @return The specified claim, or null if this exception was thrown in the process of creating a claim, such as by using ClaimRegistry.createClaim(String);
+     */
+    public Claim getClaimThatCantUseName()
     { return claimThatCantUseName; }
     
     public String getName()

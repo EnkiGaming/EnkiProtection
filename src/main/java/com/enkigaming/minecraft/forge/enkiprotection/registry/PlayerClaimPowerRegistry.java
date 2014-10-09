@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToRemoveException;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +35,16 @@ public class PlayerClaimPowerRegistry
     public int givePower(EntityPlayer player, int amount)
     {}
     
-    public int removePower(UUID player, int amount)
+    public int removePower(UUID player, int amount) throws NotEnoughClaimPowerToRemoveException
     {}
     
-    public int removePower(EntityPlayer player, int amount)
+    public int removePower(EntityPlayer player, int amount) throws NotEnoughClaimPowerToRemoveException
+    {}
+    
+    public int forceRemovePower(UUID player, int amount)
+    {}
+    
+    public int forceRemovePower(EntityPlayer player, int amount)
     {}
     
     public int transferPower(UUID fromPlayer, UUID toPlayer, int amount)

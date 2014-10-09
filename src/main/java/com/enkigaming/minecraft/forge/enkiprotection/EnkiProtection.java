@@ -24,7 +24,7 @@ public class EnkiProtection
     public void init(FMLPreInitializationEvent event)
     {
         EnkiProtection.instance = this;
-        saveFolder = new File(event.getModConfigurationDirectory().getParentFile(), "Plugins/EnkiProtection");
+        saveFolder = new File(event.getModConfigurationDirectory().getParentFile(), "plugins/EnkiProtection");
         
         initialiseRegistries();
         loadData();

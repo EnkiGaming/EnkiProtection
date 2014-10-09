@@ -2,10 +2,12 @@ package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimIdAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimWithIdNotPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimWithNameNotPresentException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
@@ -26,11 +27,14 @@ public class ClaimRegistry
         this.saveFolder = saveFolder;
     }
     
+    // To do: create caches for fast-lookup of claims by name (after being looked up once) and create event for updating
+    // a claim's cache entry when it changes name, when a claim is removed from the registry and anything else that
+    // may invalidate a cache entry.
+    
     File saveFolder;
     
     final Map<ChunkCoOrdinate, UUID> chunkClaims = new HashMap<ChunkCoOrdinate, UUID>(); // The chunk coördinates mapped to the UUID of the claim it's in.
-    final Map<UUID, Claim> claims = new HashMap<UUID, Claim>(); // All claims, using someClaim.getID() as the key.
-    final Map<UUID, Integer> playerClaimPowers = new HashMap<UUID, Integer>(); // How much power every player has to grant to claims.
+    final Map<UUID, Claim> claims = new HashMap<UUID, Claim>(); // All claims, using someClaim.getId() as the key.
     
     final PlayerClaimPowerRegistry playerPowerRegistry = new PlayerClaimPowerRegistry(saveFolder);
     
@@ -44,41 +48,79 @@ public class ClaimRegistry
     }
     
     public Claim getClaim(UUID id)
-    {}
+    {
+        synchronized(claims)
+        { return claims.get(id); }
+    }
     
     public Claim getClaim(String name)
-    {}
+    {
+        Collection<Claim> checkingClaims;
+        
+        synchronized(claims)
+        { checkingClaims = new ArrayList<Claim>(claims.values()); }
+        
+        for(Claim claim : checkingClaims)
+            if(claim.getName().equalsIgnoreCase(name))
+                return claim;
+        
+        return null;
+    }
     
     public UUID getAvailableClaimId()
-    {}
+    {
+        synchronized(claims)
+        {
+            for(int i = 0; i < 100; i++)
+            {
+                UUID id = UUID.randomUUID();
+                
+                if(claims.get(id) == null)
+                    return id;
+            }
+        }
+        
+        throw new RuntimeException("This message should only appear if there is something seriously wrong with the generation of UUIDs.");
+    }
 
     public boolean addClaim(Claim claim) throws ClaimIdAlreadyPresentException, ClaimNameAlreadyPresentException
     {
         synchronized(claims)
         {
-            Claim matchingClaim = getClaim(claim.getID());
+            Claim matchingClaim = getClaim(claim.getId());
             
             if(matchingClaim != null)
-                throw new ClaimIdAlreadyPresentException(matchingClaim, claim, matchingClaim.getID());
+                throw new ClaimIdAlreadyPresentException(matchingClaim, claim, matchingClaim.getId());
             
             matchingClaim = getClaim(claim.getName());
             
             if(matchingClaim != null)
                 throw new ClaimNameAlreadyPresentException(matchingClaim, claim, matchingClaim.getName());
             
-            claims.put(claim.getID(), claim);
+            claims.put(claim.getId(), claim);
             return true;
         }
     }
     
-    public boolean createClaim(String claimName)
-    {}
-    
-    public boolean containsClaimWithName(String name)
-    {}
-    
-    public boolean containsClaimWithId(UUID id)
-    {}
+    public Claim createClaim(String claimName) throws ClaimNameAlreadyPresentException
+    {
+        Claim claim;
+        
+        synchronized(claims)
+        {
+            claim = getClaim(claimName);
+            
+            if(claim != null)
+                throw new ClaimNameAlreadyPresentException(claim, null, claimName);
+            
+            UUID id = getAvailableClaimId();
+            claim = new Claim(this, claimName, id);
+            
+            claims.put(id, claim);
+        }
+        
+        return claim;
+    }
     
     public Map<ChunkCoOrdinate, UUID> getChunkClaims()
     {
@@ -215,26 +257,96 @@ public class ClaimRegistry
     public Collection<Claim> getClaimsPlayerHasGrantedPowerTo(EntityPlayer player)
     { return getClaimsPlayerHasGrantedPowerTo(player.getGameProfile().getId()); }
     
-    public void claimChunk(UUID claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
+    public void claimChunk(UUID claimId, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerToClaimException,
                                                                      ChunkAlreadyClaimedException
-    {}
+    {
+        Claim claim = getClaim(claimId);
+        
+        if(claim == null)
+            throw new ClaimWithIdNotPresentException(this, claimId);
+        
+        claimChunk(claim, chunk);
+    }
     
-    public void claimChunk(String claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
-                                                                       ChunkAlreadyClaimedException
-    {}
+    public void claimChunk(String claimName, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerToClaimException,
+                                                                           ChunkAlreadyClaimedException
+    {
+        Claim claim = getClaim(claimName);
+        
+        if(claim == null)
+            throw new ClaimWithNameNotPresentException(this, claimName);
+        
+        claimChunk(claim, chunk);
+    }
     
-    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerException,
+    public void claimChunk(Claim claim, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerToClaimException,
                                                                       ChunkAlreadyClaimedException
-    {}
+    {
+        UUID alreadyPresentClaim;
+        
+        synchronized(chunkClaims)
+        {
+            alreadyPresentClaim = chunkClaims.get(chunk);
+            
+            if(alreadyPresentClaim == null)
+            {
+                int claimPower = claim.getRemainingPower();
+                
+                if(claimPower >= 1)
+                {
+                    chunkClaims.put(chunk, claim.getId());
+                    claim.addChunkOnlyInClaim(chunk);
+                }
+                else
+                    throw new NotEnoughClaimPowerToClaimException(claim, claimPower, 1, chunk);
+            }
+        }
+        
+        if(alreadyPresentClaim != null)
+            throw new ChunkAlreadyClaimedException(claim, getClaim(alreadyPresentClaim), chunk);
+    }
     
-    public void unclaimChunk(UUID claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
-    {}
+    public void unclaimChunk(UUID claimId, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {
+        Claim claim = getClaim(claimId);
+        
+        if(claim == null)
+            throw new ClaimWithIdNotPresentException(this, claimId);
+        
+        unclaimChunk(claim, chunk);
+    }
     
-    public void unclaimChunk(String claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
-    {}
+    public void unclaimChunk(String claimName, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {
+        Claim claim = getClaim(claimName);
+        
+        if(claim == null)
+            throw new ClaimWithNameNotPresentException(this, claimName);
+        
+        unclaimChunk(claim, chunk);
+    }
     
     public void unclaimChunk(Claim claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
-    {}
+    {
+        UUID claimChunkIsIn;
+        
+        synchronized(chunkClaims)
+        {
+            claimChunkIsIn = chunkClaims.get(chunk);
+            
+            if(claimChunkIsIn.equals(claim.getId()))
+            {
+                chunkClaims.remove(chunk);
+                claim.removeChunkOnlyInClaim(chunk);
+            }
+        }
+        
+        synchronized(claims)
+        {
+            if(!claim.getId().equals(claimChunkIsIn))
+                throw new ChunkNotInClaimException(claim, claims.get(claimChunkIsIn), chunk);
+        }
+    }
     
     /**
      * Saves the contents of the registry to files in the folder at the stored folder path, over-writing them if

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.chunk.Chunk;
 
 public class Claim
 {
@@ -34,7 +35,7 @@ public class Claim
         {}
     }
     
-    public Claim(ClaimRegistry registry, String name)
+    public Claim(ClaimRegistry registry, String name, UUID id)
     {}
     
     public static Claim fromString(ClaimRegistry registry, String encodedClaim)
@@ -44,6 +45,7 @@ public class Claim
     String claimName;
     
     ClaimRegistry registry;
+    Collection<ChunkCoOrdinate> chunks; // doubly-referenced to optimise and avoid deadlocks.
     
     UUID owner;
     Collection<UUID> members; // Able to manage the claim, modify it, add to it, etc. but can't add new members.
@@ -69,7 +71,7 @@ public class Claim
     // in-progress revokations, caused by players revoking from claims that would result in their remaining power being
     // below 0.
     
-    public UUID getID()
+    public UUID getId()
     {}
     
     public String getName()
@@ -130,6 +132,30 @@ public class Claim
     {}
     
     public Collection<ChunkCoOrdinate> getChunks()
+    {}
+    
+    public boolean addChunk(ChunkCoOrdinate chunk)
+    {}
+    
+    public boolean addChunk(Chunk chunk)
+    {}
+    
+    boolean addChunkOnlyInClaim(ChunkCoOrdinate chunk)
+    {}
+    
+    boolean addChunkOnlyInClaim(Chunk chunk)
+    {}
+    
+    boolean removeChunkOnlyInClaim(ChunkCoOrdinate chunk)
+    {}
+    
+    boolean removechunkOnlyInClaim(Chunk chunk)
+    {}
+    
+    public boolean removeChunk(ChunkCoOrdinate chunk)
+    {}
+    
+    public boolean removeChunk(Chunk chunk)
     {}
     
     public int getTotalPower()

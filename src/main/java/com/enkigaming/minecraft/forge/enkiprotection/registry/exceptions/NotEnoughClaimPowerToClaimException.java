@@ -3,9 +3,9 @@ package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 
-public class NotEnoughClaimPowerException extends Exception
+public class NotEnoughClaimPowerToClaimException extends Exception
 {
-    public NotEnoughClaimPowerException(Claim claim, int claimPower, int claimPowerRequired, ChunkCoOrdinate chunk)
+    public NotEnoughClaimPowerToClaimException(Claim claim, int claimPower, int claimPowerRequired, ChunkCoOrdinate chunk)
     {
         super();
         
