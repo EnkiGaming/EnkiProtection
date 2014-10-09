@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.commandlisteners;
 
-public class ClaimHandler
+public class CmdClaimHandler
 {
     /*
      * Should include
