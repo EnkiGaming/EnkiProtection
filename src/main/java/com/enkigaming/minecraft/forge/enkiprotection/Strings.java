@@ -5,6 +5,9 @@ public class Strings
     public static String getStringCantBreakBlocks(String claimName)
     { return "You may not break blocks in " + claimName + "."; }
     
+    public static String getStringCantPlaceBlocks(String claimName)
+    { return "You may not place blocks in " + claimName + "."; }
+    
     public static String getStringCantInteractWithBlocks(String claimName)
     { return "You may not interact with blocks in " + claimName + "."; }
     
