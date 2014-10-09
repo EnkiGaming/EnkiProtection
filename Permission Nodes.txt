@@ -52,3 +52,10 @@ EnkiProtection.Claim.Setting.Any.AllowInteractWithEntities - allows player to se
 EnkiProtection.Claim.Setting.Own.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in claims they own.
 EnkiProtection.Claim.Setting.Member.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in claims they’re a member of.
 EnkiProtection.Claim.Setting.Any.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in any claims.
+EnkiProtection.Claim.Bypass.AllowExplosions - allows explosions created by this player to go off, regardless of the claim they’re in.
+EnkiProtection.Claim.Bypass.AllowFriendlyCombat - allows player to attack claim owners/members/allies in a claim they’re owner/member/ally of even if the chunk doesn’t allow friendly combat.
+EnkiProtection.Claim.Bypass.AllowPlayerCombat - allows player to attack other players in a claim that doesnt’ allow player combat, but not owners/members/allies if the player is also one.
+EnkiProtection.Claim.Bypass.AllowNonAllyEntry - allows the player to enter a claim as long as they aren’t banned (unless they also have ImmuneToBan) even if doesn’t allow entry of non-ally players.
+EnkiProtection.Claim.Bypass.AllowInteractWithBlocks - allows the player to interact with blocks in a claim regardless of whether or not it allows non-allies to interact with blocks.
+EnkiProtection.Claim.Bypass.AllowInteractWithEntities - allows the player to interact with entities in a claim regardless of whether or not it allows non-allies to interact with them.
+EnkiProtection.Claim.Bypass.AllowBreakOrPlaceBlocks - allows the player to break or place blocks in a claim regardless of whether the claim allows non-allies to.
