@@ -1,0 +1,54 @@
+Permission nodes:
+
+EnkiProtection.Power.Give - allows player to give claim power to other player.
+EnkiProtection.Power.GiveSelf - allows player to create claim power for themselves.
+EnkiProtection.Claim.Create - allows player to create claims.
+EnkiProtection.Claim.Own.Delete - allows player to delete claims they own.
+EnkiProtection.Claim.Member.Delete - allows player to delete claims they’re a member of.
+EnkiProtection.Claim.Any.Delete - allows player to delete any claims.
+EnkiProtection.Claim.Own.Invite - allows player to invite players to any claim they own.
+EnkiProtection.Claim.Member.Invite - allows player to invite players to any claim which they’re a member of.
+EnkiProtection.Claim.Any.Invite - allows player to invite players to any claim at all. I see baph using this :P
+EnkiProtection.Claim.Join - allows player to join a claim as a member.
+EnkiProtection.Claim.Ally - allows player to be an ally of a claim.
+EnkiProtection.Claim.ImmuneToBan - allows player to not be able to be banned from claims.
+EnkiProtection.Claim.Own.GrantOwnership - allows player to grant other players ownership over claims they own.
+EnkiProtection.Claim.Member.GrantOwnership - allows player to grant other players ownership over claims they’re a member of. (Why would anyone have this permission node?)
+EnkiProtection.Claim.Any.GrantOwnership - allows player to grant other players ownership over any claims.
+EnkiProtection.Claim.Chunk.Own.Add - allows player to add chunks to their own claims.
+EnkiProtection.Claim.Chunk.Member.Add - allows player to add chunks to claims they’re a member of.
+EnkiProtection.Claim.Chunk.Any.Add - allows player to add chunks to any claims.
+EnkiProtection.Claim.Chunk.NonConsecutive.Add - allows player to add non-consecutive chunks to a claim.
+EnkiProtection.Claim.Chunk.Add.Auto - allows player to claim chunks by running through them.
+EnkiProtection.Claim.Chunk.Own.Remove - allows player to remove chunks from their own claims.
+EnkiProtection.Claim.Chunk.Member.Remove - allows player to remove chunks from claims they’re a member of.
+EnkiProtection.Claim.Chunk.Any.Remove - allows player to remove chunks from any claims.
+EnkiProtection.Claim.Chunk.NonConsecutive.Remove - allows player to remove chunks from a claim in a way that would split its chunks.
+EnkiProtection.Claim.Chunk.Remove.Auto - allows player to remove chunks from a claim by running through them.
+EnkiProtection.Claim.Setting.Own.WelcomeMessage - allows player to set welcome message in claims they own.
+EnkiProtection.Claim.Setting.Member.WelcomeMessage - allows player to set welcome message in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.WelcomeMessage - allows player to set welcome message in any claims.
+EnkiProtection.Claim.Setting.Own.AllowExplosions - allows player to set whether or not explosions are allowed in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowExplosions - allows player to set whether or not explosions are allowed in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowExplosions - allows player to set whether or not explosions are allowed in any claims.
+EnkiProtection.Claim.Setting.Own.AllowFriendlyCombat - allows player to set whether owners, members, and allies of a claim can damage each other in that claim, in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowFriendlyCombat - allows player to set whether owners, members, and allies of a claim can damage each other in that claim, in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowFriendlyCombat - allows player to set whether owners, members, and allies of a claim can damage each other in that claim, in any claims.
+EnkiProtection.Claim.Setting.Own.AllowPlayerCombat - allows player to set whether players can damage each other in that claim, in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowPlayerCombat - allows player to set whether players can damage each other in that claim, in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowPlayerCombat - allows player to set whether players can damage each other in that claim, in any claims.
+EnkiProtection.Claim.Setting.Own.AllowMobEntry - allows player to set whether mobs can spawn or enter a claim, in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowMobEntry - allows player to set whether mobs can spawn or enter a claim, in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowMobEntry - allows player to set whether mobs can spawn or enter a claim, in any claims.
+EnkiProtection.Claim.Setting.Own.AllowNonAllyEntry - allows player to set whether non-allies can enter a claim, in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowNonAllyEntry - allows player to set whether non-allies can enter a claim, in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowNonAllyEntry - allows player to set whether non-allies can enter a claim, in any claims.
+EnkiProtection.Claim.Setting.Own.AllowInteractWithBlocks - allows player to set whether non-allies can interact with blocks in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowInteractWithBlocks - allows player to set whether non-allies can interact with blocks in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowInteractWithBlocks - allows player to set whether non-allies can interact with blocks in any claims.
+EnkiProtection.Claim.Setting.Own.AllowInteractWithEntities - allows player to set whether non-allies can interact with entities in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowInteractWithEntities - allows player to set whether non-allies can interact with entities in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowInteractWithEntities - allows player to set whether non-allies can interact with entities in any claims.
+EnkiProtection.Claim.Setting.Own.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in claims they own.
+EnkiProtection.Claim.Setting.Member.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in claims they’re a member of.
+EnkiProtection.Claim.Setting.Any.AllowBreakOrPlaceBlocks - allows player to set whether non-allies can break or place blocks in any claims.
