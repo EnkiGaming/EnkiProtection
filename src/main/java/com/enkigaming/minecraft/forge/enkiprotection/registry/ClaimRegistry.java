@@ -25,18 +25,19 @@ public class ClaimRegistry
     public ClaimRegistry(File saveFolder)
     {
         this.saveFolder = saveFolder;
+        playerPowerRegistry = new PlayerClaimPowerRegistry(saveFolder);
     }
     
     // To do: create caches for fast-lookup of claims by name (after being looked up once) and create event for updating
     // a claim's cache entry when it changes name, when a claim is removed from the registry and anything else that
     // may invalidate a cache entry.
     
-    File saveFolder;
+    final File saveFolder;
     
     final Map<ChunkCoOrdinate, UUID> chunkClaims = new HashMap<ChunkCoOrdinate, UUID>(); // The chunk coördinates mapped to the UUID of the claim it's in.
     final Map<UUID, Claim> claims = new HashMap<UUID, Claim>(); // All claims, using someClaim.getId() as the key.
     
-    final PlayerClaimPowerRegistry playerPowerRegistry = new PlayerClaimPowerRegistry(saveFolder);
+    final PlayerClaimPowerRegistry playerPowerRegistry;
     
     public PlayerClaimPowerRegistry getPlayerPowerRegistry()
     { return playerPowerRegistry; }
