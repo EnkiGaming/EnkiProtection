@@ -34,19 +34,17 @@ public class EnkiProtection
     
     private void initialiseRegistries()
     {
-        permissions = new Permissions(saveFolder);
+        permissions = new Permissions();
         claimRegistry = new ClaimRegistry(saveFolder);
     }
     
     private void loadData()
     {
-        permissions.load();
         claimRegistry.load();
     }
     
     private void saveData()
     {
-        permissions.save();
         claimRegistry.save();
     }
     

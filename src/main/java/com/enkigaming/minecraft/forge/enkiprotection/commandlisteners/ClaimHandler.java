@@ -13,6 +13,9 @@ public class ClaimHandler
      *     Claim <claim name> Ally <player name(s)> - adds player(s) as ally
      *     Claim <claim name> Ban <player name(s)> - adds player(s) as banned
      * 
+     *     Claim <claim name> Chunk Add
+     *     Claim <claim name> Chunk Remove
+     * 
      *     Claim <claim name> allowexplosions <true/false>
      *     Claim <claim name> allowfriendlycombat <true/false>
      *     Claim <claim name> allowplayercombat <true/false>

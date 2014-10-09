@@ -7,16 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class Permissions
 {
-    public Permissions(File saveFolder)
-    {}
-    
-    File saveFolder;
-    Multimap<UUID, String> permissionsMap;
-    
-    public void save()
-    {}
-    
-    public void load()
+    public Permissions()
     {}
     
     public boolean playerHasPermission(UUID playerID, String permission)
@@ -29,5 +20,11 @@ public class Permissions
     {}
     
     public boolean givePlayerPermission(EntityPlayer player, String permission)
+    {}
+    
+    public boolean removePlayerPermission(UUID playerID, String permission)
+    {}
+    
+    public boolean removePlayerPermission(EntityPlayer player, String permission)
     {}
 }
