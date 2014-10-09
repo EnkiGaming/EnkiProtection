@@ -15,10 +15,10 @@ public class GrantingMoreClaimPowerThanHaveException extends Exception
         this.claimPowerPlayerHasTotal = claimPowerPlayerHasTotal;
     }
     
-    UUID player;
-    int claimPowerAttemptingToGrant;
-    int claimPowerPlayerHasAvailable;
-    int claimPowerPlayerHasTotal;
+    final UUID player;
+    final int claimPowerAttemptingToGrant;
+    final int claimPowerPlayerHasAvailable;
+    final int claimPowerPlayerHasTotal;
     
     public UUID getPlayerID()
     { return player; }

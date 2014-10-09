@@ -2,6 +2,9 @@ Permission nodes:
 
 EnkiProtection.Power.Give - allows player to give claim power to other player.
 EnkiProtection.Power.GiveSelf - allows player to create claim power for themselves.
+EnkiProtection.Power.Grant - allows player to grant power to a claim.
+EnkiProtection.Power.Revoke - allows player to revoke power from a claim.
+EnkiProtection.Power.Bypass.RevokeWaitTime - allows player to immediately revoke power from a claim, even if doing so would result in the claim losing chunks.
 EnkiProtection.Claim.Create - allows player to create claims.
 EnkiProtection.Claim.Own.Delete - allows player to delete claims they own.
 EnkiProtection.Claim.Member.Delete - allows player to delete claims they’re a member of.

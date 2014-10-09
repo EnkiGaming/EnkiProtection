@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.ChunkCoOrdinate;
+import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 
 public class ChunkAlreadyClaimedException extends Exception
@@ -14,9 +14,9 @@ public class ChunkAlreadyClaimedException extends Exception
         this.chunk = chunk;
     }
     
-    Claim attemptingToClaim;
-    Claim alreadyBelongsTo;
-    ChunkCoOrdinate chunk;
+    final Claim attemptingToClaim;
+    final Claim alreadyBelongsTo;
+    final ChunkCoOrdinate chunk;
     
     public Claim getClaimChunkAlreadyBelongsTo()
     { return alreadyBelongsTo; }

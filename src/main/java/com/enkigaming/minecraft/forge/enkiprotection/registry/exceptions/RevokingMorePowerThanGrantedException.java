@@ -13,10 +13,10 @@ public class RevokingMorePowerThanGrantedException extends Exception
         this.powerPlayerHasGranted = powerPlayerHasGranted;
     }
     
-    Claim claim;
-    UUID player;
-    int powerAttemptingToRevoke;
-    int powerPlayerHasGranted;
+    final Claim claim;
+    final UUID player;
+    final int powerAttemptingToRevoke;
+    final int powerPlayerHasGranted;
     
     public Claim getClaim()
     { return claim; }

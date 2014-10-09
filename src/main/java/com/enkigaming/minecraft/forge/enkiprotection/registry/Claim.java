@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.GrantingMoreClaimPowerThanHaveException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
@@ -84,6 +85,42 @@ public class Claim
     {}
     
     public Collection<UUID> getBannedPlayers()
+    {}
+    
+    public boolean isOwner(UUID player)
+    {}
+    
+    public boolean isOwner(EntityPlayer player)
+    {}
+    
+    public boolean isMember(UUID player)
+    {}
+    
+    public boolean isMember(EntityPlayer player)
+    {}
+    
+    public boolean isMemberOrBetter(UUID player)
+    {}
+    
+    public boolean isMemberOrBetter(EntityPlayer player)
+    {}
+    
+    public boolean isAlly(UUID player)
+    {}
+    
+    public boolean isAlly(EntityPlayer player)
+    {}
+    
+    public boolean isAllyOrBetter(UUID player)
+    {}
+    
+    public boolean isAllyOrBetter(EntityPlayer player)
+    {}
+    
+    public boolean isBannedFrom(UUID player)
+    {}
+    
+    public boolean isBannedFrom(EntityPlayer player)
     {}
     
     public String getWelcomeMessage()

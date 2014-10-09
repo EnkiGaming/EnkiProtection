@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.ChunkCoOrdinate;
+import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 
 public class NotEnoughClaimPowerException extends Exception
@@ -15,10 +15,10 @@ public class NotEnoughClaimPowerException extends Exception
         this.chunk = chunk;
     }
     
-    Claim claim;
-    int claimPower;
-    int claimPowerRequired;
-    ChunkCoOrdinate chunk;
+    final Claim claim;
+    final int claimPower;
+    final int claimPowerRequired;
+    final ChunkCoOrdinate chunk;
     
     public Claim getClaim()
     { return claim; }

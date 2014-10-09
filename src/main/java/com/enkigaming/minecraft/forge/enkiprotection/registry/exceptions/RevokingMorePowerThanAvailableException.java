@@ -11,9 +11,9 @@ public class RevokingMorePowerThanAvailableException extends Exception
         this.powerAttemptingToRevoke = powerAttemptingToRevoke;
     }
     
-    Claim claim;
-    int availablePower;
-    int powerAttemptingToRevoke;
+    final Claim claim;
+    final int availablePower;
+    final int powerAttemptingToRevoke;
     
     public Claim getClaim()
     { return claim; }

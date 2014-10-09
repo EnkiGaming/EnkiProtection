@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.ChunkCoOrdinate;
+import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
 
 public class ChunkNotInClaimException extends Exception
@@ -14,9 +14,9 @@ public class ChunkNotInClaimException extends Exception
         this.chunk = chunk;
     }
     
-    Claim notIn;
-    Claim in;
-    ChunkCoOrdinate chunk;
+    final Claim notIn;
+    final Claim in;
+    final ChunkCoOrdinate chunk;
     
     public Claim getClaimChunkIsNotIn()
     { return notIn; }

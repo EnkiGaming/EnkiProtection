@@ -21,7 +21,7 @@ public class PlayerPlaceOrBreakBlockHandler
         if(event.block == null  || event.getPlayer() == null)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.block);
+        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
         
         if(claim != null && !claim.canBreakOrPlaceBlocks(event.getPlayer()))
         {
@@ -36,7 +36,7 @@ public class PlayerPlaceOrBreakBlockHandler
         if(event.placedBlock == null || event.player == null)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.placedBlock);
+        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
         
         if(claim != null && !claim.canBreakOrPlaceBlocks(event.player))
         {

@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.utils;
 
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -21,6 +21,13 @@ public class ChunkCoOrdinate
         xCoOrd = x;
         zCoOrd = z;
         this.worldID = worldID;
+    }
+    
+    public ChunkCoOrdinate(Chunk chunk)
+    {
+        xCoOrd = chunk.xPosition;
+        zCoOrd = chunk.zPosition;
+        this.worldID = chunk.worldObj.provider.dimensionId;
     }
     
     public ChunkCoOrdinate(int x, int z)
