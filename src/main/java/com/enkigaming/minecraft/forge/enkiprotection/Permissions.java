@@ -1,7 +1,5 @@
 package com.enkigaming.minecraft.forge.enkiprotection;
 
-import com.google.common.collect.Multimap;
-import java.io.File;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 

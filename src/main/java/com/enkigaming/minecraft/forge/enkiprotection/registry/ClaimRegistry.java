@@ -259,7 +259,7 @@ public class ClaimRegistry
     { return getClaimsPlayerHasGrantedPowerTo(player.getGameProfile().getId()); }
     
     public void claimChunk(UUID claimId, ChunkCoOrdinate chunk) throws NotEnoughClaimPowerToClaimException,
-                                                                     ChunkAlreadyClaimedException
+                                                                       ChunkAlreadyClaimedException
     {
         Claim claim = getClaim(claimId);
         

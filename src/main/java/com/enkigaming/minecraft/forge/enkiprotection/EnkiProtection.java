@@ -3,7 +3,9 @@ package com.enkigaming.minecraft.forge.enkiprotection;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import java.io.File;
 
 @Mod(modid = EnkiProtection.MODID, name = EnkiProtection.NAME, version = EnkiProtection.VERSION, acceptableRemoteVersions = "*")
@@ -13,7 +15,7 @@ public class EnkiProtection
     public static final String MODID = "EnkiProtection";
     public static final String VERSION = "1.0";
     
-    @Mod.Instance("EnkiProtection")
+    @Instance("EnkiProtection")
     static EnkiProtection instance;
     File saveFolder;
     
@@ -29,7 +31,18 @@ public class EnkiProtection
         initialiseRegistries();
         loadData();
         registerEvents();
-        registerCommands();
+    }
+    
+    @EventHandler
+    public void initServerStart(FMLServerStartingEvent event)
+    {
+
+    }
+    
+    @EventHandler
+    private void registerCommands(FMLServerStartingEvent event)
+    {
+        
     }
     
     private void initialiseRegistries()
@@ -49,11 +62,6 @@ public class EnkiProtection
     }
     
     private void registerEvents()
-    {
-        
-    }
-    
-    private void registerCommands()
     {
         
     }
