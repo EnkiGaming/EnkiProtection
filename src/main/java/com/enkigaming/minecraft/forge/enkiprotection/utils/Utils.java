@@ -1,10 +1,12 @@
 package com.enkigaming.minecraft.forge.enkiprotection.utils;
 
+import com.mojang.authlib.GameProfile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.ChunkPosition;
 
 public class Utils
@@ -79,4 +81,7 @@ public class Utils
     
     public static void unmarkPlayerAsRespawning(UUID playerUUID)
     { respawningPlayers.remove(playerUUID); }
+    
+    public static boolean playerIsOp(GameProfile playerProfile)
+    { return MinecraftServer.getServer().getConfigurationManager().func_152596_g(playerProfile); }
 }

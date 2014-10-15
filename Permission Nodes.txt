@@ -20,14 +20,14 @@ EnkiProtection.Claim.Member .GrantOwnership ------------------- allows player to
 EnkiProtection.Claim.Any    .GrantOwnership ------------------- allows player to grant other players ownership over any claims.
 EnkiProtection.Claim.Chunk  .Own           .Add --------------- allows player to add chunks to their own claims.
 EnkiProtection.Claim.Chunk  .Member        .Add --------------- allows player to add chunks to claims they’re a member of.
-EnkiProtection.Claim.Chunk  .Ally           .Add -------------- allows player to add chunks to any claims.
-EnkiProtection.Claim.Chunk  .NonConsecutive.Add --------------- allows player to add non-consecutive chunks to a claim.
-EnkiProtection.Claim.Chunk  .Add           .Auto -------------- allows player to claim chunks by running through them.
+EnkiProtection.Claim.Chunk  .Ally          .Add --------------- allows player to add chunks to any claims.
+EnkiProtection.Claim.Chunk  .NonConsecutiveAdd ---------------- allows player to add non-consecutive chunks to a claim.
+EnkiProtection.Claim.Chunk  .AutoAdd -------------------------- allows player to claim chunks by running through them.
 EnkiProtection.Claim.Chunk  .Own           .Remove ------------ allows player to remove chunks from their own claims.
 EnkiProtection.Claim.Chunk  .Member        .Remove ------------ allows player to remove chunks from claims they’re a member of.
 EnkiProtection.Claim.Chunk  .Any           .Remove ------------ allows player to remove chunks from any claims.
-EnkiProtection.Claim.Chunk  .NonConsecutive.Remove ------------ allows player to remove chunks from a claim in a way that would split its chunks.
-EnkiProtection.Claim.Chunk  .Remove        .Auto -------------- allows player to remove chunks from a claim by running through them.
+EnkiProtection.Claim.Chunk  .NonConsecutiveRemove ------------- allows player to remove chunks from a claim in a way that would split its chunks.
+EnkiProtection.Claim.Chunk  .AutoRemove ----------------------- allows player to remove chunks from a claim by running through them.
 EnkiProtection.Claim.Setting.Own   .WelcomeMessage ------------ allows player to set welcome message in claims they own.
 EnkiProtection.Claim.Setting.Member.WelcomeMessage ------------ allows player to set welcome message in claims they’re a member of.
 EnkiProtection.Claim.Setting.Any   .WelcomeMessage ------------ allows player to set welcome message in any claims.
