@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated;
 
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToRemoveException;
 import java.io.File;
@@ -85,11 +85,5 @@ public class PlayerClaimPowerRegistry
     {}
     
     public int transferPower(EntityPlayer fromPlayer, EntityPlayer toPlayer, int amount)
-    {}
-    
-    public int save()
-    {}
-    
-    public int load()
     {}
 }

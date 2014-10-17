@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated;
 
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;

@@ -12,38 +12,31 @@ import net.minecraft.server.MinecraftServer;
 
 public class Permissions
 {
-    public Permissions()
+    final static Collection<String> defaultPermissions = new ArrayList<String>(Arrays.asList(new String[]
     {
-        String[] defaultPerms =
-        {
-            "enkiprotection.power.grant",
-            "enkiprotection.power.revoke",
-            "enkiprotection.claim.create",
-            "enkiprotection.claim.own.delete",
-            "enkiprotection.claim.own.invite",
-            "enkiprotection.claim.join",
-            "enkiprotection.claim.ally",
-            "enkiprotection.claim.own.grantownership",
-            "enkiprotection.claim.chunk.own.add",
-            "enkiprotection.claim.chunk.member.add",
-            "enkiprotection.claim.chunk.autoadd",
-            "enkiprotection.claim.chunk.member.remove",
-            "enkiprotection.claim.chunk.autoremove",
-            "enkiprotection.claim.setting.member.welcomemessage",
-            "enkiprotection.claim.setting.member.allowexplosions",
-            "enkiprotection.claim.setting.member.allowfriendlycombat",
-            "enkiprotection.claim.setting.member.allownonallyentry",
-            "enkiprotection.claim.setting.member.allowinteractwithblocks",
-            "enkiprotection.claim.setting.member.allowinteractwithentities",
-            "enkiprotection.claim.setting.member.allowbreakorplaceblocks"
-        };
-        
-        defaultPermissions.addAll(Arrays.asList(defaultPerms));
-    }
+        "enkiprotection.power.grant",
+        "enkiprotection.power.revoke",
+        "enkiprotection.claim.create",
+        "enkiprotection.claim.own.delete",
+        "enkiprotection.claim.own.invite",
+        "enkiprotection.claim.join",
+        "enkiprotection.claim.ally",
+        "enkiprotection.claim.own.grantownership",
+        "enkiprotection.claim.chunk.own.add",
+        "enkiprotection.claim.chunk.member.add",
+        "enkiprotection.claim.chunk.autoadd",
+        "enkiprotection.claim.chunk.member.remove",
+        "enkiprotection.claim.chunk.autoremove",
+        "enkiprotection.claim.setting.member.welcomemessage",
+        "enkiprotection.claim.setting.member.allowexplosions",
+        "enkiprotection.claim.setting.member.allowfriendlycombat",
+        "enkiprotection.claim.setting.member.allownonallyentry",
+        "enkiprotection.claim.setting.member.allowinteractwithblocks",
+        "enkiprotection.claim.setting.member.allowinteractwithentities",
+        "enkiprotection.claim.setting.member.allowbreakorplaceblocks"
+    }));
     
-    final Collection<String> defaultPermissions = new ArrayList<String>();
-    
-    public boolean playerHasPermission(UUID playerId, String permission)
+    public static boolean hasPermission(UUID playerId, String permission)
     {
         if(Loader.isModLoaded("EnkiPerms"))
             return checkPermissionsMod(playerId, permission);
@@ -61,7 +54,7 @@ public class Permissions
                 }
             }
             
-            if(Utils.playerIsOp(player.getGameProfile()))
+            if(player != null && Utils.playerIsOp(player.getGameProfile()))
                 return true;
             
             for(String defaultPermission : defaultPermissions)
@@ -72,7 +65,7 @@ public class Permissions
         }
     }
     
-    public boolean playerHasPermission(EntityPlayer player, String permission)
+    public static boolean hasPermission(EntityPlayer player, String permission)
     {
         if(Loader.isModLoaded("EnkiPerms"))
             return checkPermissionsMod(player.getGameProfile().getId(), permission);
@@ -89,6 +82,6 @@ public class Permissions
         }
     }
     
-    protected boolean checkPermissionsMod(UUID playerId, String permission)
+    protected static boolean checkPermissionsMod(UUID playerId, String permission)
     { return EnkiPerms.hasPermission(playerId, permission); }
 }

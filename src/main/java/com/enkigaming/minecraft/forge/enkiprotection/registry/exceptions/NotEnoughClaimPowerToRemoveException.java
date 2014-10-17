@@ -4,16 +4,18 @@ import java.util.UUID;
 
 public class NotEnoughClaimPowerToRemoveException extends Exception
 {
-    public NotEnoughClaimPowerToRemoveException(UUID playerId, int amountAttemptedToRemove, int amountPlayerHad)
+    public NotEnoughClaimPowerToRemoveException(UUID playerId, int amountAttemptedToRemove, int amountPlayerHadAvailable, int amountPlayerHadTotal)
     {
         this.playerId = playerId;
         this.amountAttemptedToRemove = amountAttemptedToRemove;
-        this.amountPlayerHad = amountPlayerHad;
+        this.amountPlayerHadAvailable = amountPlayerHadAvailable;
+        this.amountPlayerHadTotal = amountPlayerHadTotal;
     }
     
     final UUID playerId;
     final int amountAttemptedToRemove;
-    final int amountPlayerHad;
+    final int amountPlayerHadAvailable;
+    final int amountPlayerHadTotal;
     
     public UUID getPlayerId()
     { return playerId; }
@@ -21,6 +23,9 @@ public class NotEnoughClaimPowerToRemoveException extends Exception
     public int getAmountAttemptedToRemove()
     { return amountAttemptedToRemove; }
     
-    public int getAmountPlayerHad()
-    { return amountPlayerHad; }
+    public int getAmountPlayerHadAvailable()
+    { return amountPlayerHadAvailable; }
+    
+    public int getAmountPlayerHadTotal()
+    { return amountPlayerHadTotal; }
 }

@@ -1,6 +1,7 @@
 package com.enkigaming.minecraft.forge.enkiprotection;
 
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.PlayerPowerRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -20,7 +21,8 @@ public class EnkiProtection
     File saveFolder;
     
     ClaimRegistry claimRegistry;
-    Permissions permissions;
+    PlayerPowerRegistry claimPowerRegistry;
+    Settings settings;
     
     @EventHandler
     public void init(FMLPreInitializationEvent event)
@@ -47,18 +49,18 @@ public class EnkiProtection
     
     private void initialiseRegistries()
     {
-        permissions = new Permissions();
         claimRegistry = new ClaimRegistry(saveFolder);
+        settings = new Settings();
     }
     
     private void loadData()
     {
-        claimRegistry.load();
+        
     }
     
     private void saveData()
     {
-        claimRegistry.save();
+        
     }
     
     private void registerEvents()
@@ -72,6 +74,9 @@ public class EnkiProtection
     public ClaimRegistry getRegistry()
     { return claimRegistry; }
     
-    public Permissions getPermissions()
-    { return permissions; }
+    public PlayerPowerRegistry getPowerRegistry()
+    { return claimPowerRegistry; }
+    
+    public Settings getSettings()
+    { return settings; }
 }

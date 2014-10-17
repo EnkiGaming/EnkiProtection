@@ -1,7 +1,7 @@
 package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;

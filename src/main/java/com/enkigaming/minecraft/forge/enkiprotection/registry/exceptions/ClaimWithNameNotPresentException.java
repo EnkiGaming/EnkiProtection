@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.ClaimRegistry;
 
 public class ClaimWithNameNotPresentException extends IllegalArgumentException
 {

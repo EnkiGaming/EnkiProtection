@@ -1,13 +1,23 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated;
 
+import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToRemoveException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.GrantingMoreClaimPowerThanHaveException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.chunk.Chunk;
 
@@ -16,23 +26,38 @@ public class Claim
     public static class PowerRevocation
     {
         public PowerRevocation(int amount, Date timeToForceRevoke)
-        {}
+        {
+            this.amount = amount;
+            this.timeStarted = new Date();
+            this.timeToForceRevoke = timeToForceRevoke;
+        }
         
-        final int amount;
+        int amount;
         final Date timeStarted;
-        final Date timeToForceRevoke;
+        Date timeToForceRevoke;
         
         public int setAmount(int newAmount)
-        {}
+        {
+            int old = amount;
+            amount = newAmount;
+            return old;
+        }
+        
+        public Date setTimeToForceRevoke(Date newTime)
+        {
+            Date old = timeToForceRevoke;
+            timeToForceRevoke = new Date(newTime.getTime());
+            return old;
+        }
         
         public int getAmount()
-        {}
+        { return amount; }
         
         public Date getTimeStarted()
-        {}
+        { return new Date(timeStarted.getTime()); }
         
         public Date getTimeToForceRevoke()
-        {}
+        { return new Date(timeToForceRevoke.getTime()); }
     }
     
     public Claim(ClaimRegistry registry, String name, UUID id)
@@ -41,16 +66,16 @@ public class Claim
     public static Claim fromString(ClaimRegistry registry, String encodedClaim)
     {}
     
-    UUID claimID;
+    final UUID claimId;
     String claimName;
     
-    ClaimRegistry registry;
-    Collection<ChunkCoOrdinate> chunks; // doubly-referenced to optimise and avoid deadlocks.
+    final ClaimRegistry registry;
+    final Set<ChunkCoOrdinate> chunks = new HashSet<ChunkCoOrdinate>(); // doubly-referenced to optimise and avoid deadlocks.
     
     UUID owner;
-    Collection<UUID> members; // Able to manage the claim, modify it, add to it, etc. but can't add new members.
-    Collection<UUID> allies; // Able to enter, break blocks, right-click, etc.
-    Collection<UUID> banned; // Not able to enter the area
+    final Collection<UUID> members = new ArrayList<UUID>(); // Able to manage the claim, modify it, add to it, etc. but can't add new members.
+    final Collection<UUID> allies = new ArrayList<UUID>(); // Able to enter, break blocks, right-click, etc.
+    final Collection<UUID> banned = new ArrayList<UUID>(); // Not able to enter the area
     
     String welcomeMessage;
     
@@ -71,107 +96,213 @@ public class Claim
     // in-progress revokations, caused by players revoking from claims that would result in their remaining power being
     // below 0.
     
+    final protected Object nameLock = new Object();
+    final protected Object membersAlliesOwnerBannedLock = new Object();
+    final protected Object welcomeMessageLock = new Object();
+    final protected Object powerLock = new Object();
+    
     public UUID getId()
-    {}
+    { return claimId; }
     
     public String getName()
-    {}
+    {
+        synchronized(nameLock)
+        { return claimName; }
+    }
     
     public UUID getOwner()
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return owner; }
+    }
     
     public Collection<UUID> getMembers()
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return new ArrayList<UUID>(members); }
+    }
     
     public Collection<UUID> getAllies()
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return new ArrayList<UUID>(allies); }
+    }
     
     public Collection<UUID> getBannedPlayers()
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return new ArrayList<UUID>(banned); }
+    }
     
     public boolean isOwner(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return owner.equals(player); }
+    }
     
     public boolean isOwner(EntityPlayer player)
-    {}
+    { return isOwner(player.getGameProfile().getId()); }
     
     public boolean isMember(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return members.contains(player); }
+    }
     
     public boolean isMember(EntityPlayer player)
-    {}
+    { return isMember(player.getGameProfile().getId()); }
     
     public boolean isMemberOrBetter(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        {
+            if(owner.equals(player))
+                return true;
+            
+            if(members.contains(player))
+                return true;
+            
+            return false;
+        }
+    }
     
     public boolean isMemberOrBetter(EntityPlayer player)
-    {}
+    { return isMemberOrBetter(player.getGameProfile().getId()); }
     
     public boolean isAlly(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return allies.contains(player); }
+    }
     
     public boolean isAlly(EntityPlayer player)
-    {}
+    { return isAlly(player.getGameProfile().getId()); }
     
     public boolean isAllyOrBetter(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        {
+            if(owner.equals(player))
+                return true;
+            
+            if(members.contains(player))
+                return true;
+            
+            if(allies.contains(player))
+                return true;
+            
+            return false;
+        }
+    }
     
     public boolean isAllyOrBetter(EntityPlayer player)
-    {}
+    { return isAllyOrBetter(player.getGameProfile().getId()); }
     
     public boolean isBannedFrom(UUID player)
-    {}
+    {
+        synchronized(membersAlliesOwnerBannedLock)
+        { return banned.contains(player); }
+    }
     
     public boolean isBannedFrom(EntityPlayer player)
-    {}
+    { return isBannedFrom(player.getGameProfile().getId()); }
     
     public String getWelcomeMessage()
-    {}
+    {
+        synchronized(welcomeMessageLock)
+        { return welcomeMessage; }
+    }
     
     public ClaimRegistry getRegistry()
-    {}
+    { return registry; }
     
     public Collection<ChunkCoOrdinate> getChunks()
-    {}
+    {
+        synchronized(chunks)
+        { return new ArrayList<ChunkCoOrdinate>(chunks); }
+    }
     
-    public boolean addChunk(ChunkCoOrdinate chunk)
-    {}
+    public void addChunk(ChunkCoOrdinate chunk) throws NotEnoughClaimPowerToClaimException, ChunkAlreadyClaimedException
+    { registry.claimChunk(this, chunk); }
     
-    public boolean addChunk(Chunk chunk)
-    {}
+    public void addChunk(Chunk chunk) throws NotEnoughClaimPowerToClaimException, ChunkAlreadyClaimedException
+    { addChunk(new ChunkCoOrdinate(chunk)); }
     
     boolean addChunkOnlyInClaim(ChunkCoOrdinate chunk)
-    {}
+    {
+        synchronized(chunks)
+        { return chunks.add(chunk); }
+    }
     
     boolean addChunkOnlyInClaim(Chunk chunk)
-    {}
+    { return addChunkOnlyInClaim(new ChunkCoOrdinate(chunk)); }
     
     boolean removeChunkOnlyInClaim(ChunkCoOrdinate chunk)
-    {}
+    {
+        synchronized(chunks)
+        { return chunks.remove(chunk); }
+    }
     
     boolean removechunkOnlyInClaim(Chunk chunk)
-    {}
+    { return removeChunkOnlyInClaim(new ChunkCoOrdinate(chunk)); }
     
     public boolean removeChunk(ChunkCoOrdinate chunk)
-    {}
+    { return registry.unclaimChunk(this, chunk); }
     
     public boolean removeChunk(Chunk chunk)
-    {}
+    { return removeChunk(new ChunkCoOrdinate(chunk)); }
     
     public int getTotalPower()
-    {}
+    {
+        synchronized(powerLock)
+        {
+            int power = 0;
+            
+            for(Integer i : claimPowerGrants.values())
+                power += i;
+            
+            return power;
+        }
+    }
     
     public int getRemainingPower()
-    {}
+    {
+        int powerUsed;
+        
+        synchronized(chunks)
+        { powerUsed = chunks.size(); }
+        
+        return getTotalPower() - powerUsed;
+    }
     
-    public int getPowerPlayerHasGranted(UUID playerID)
-    {}
+    public int getPowerPlayerHasGranted(UUID playerId)
+    {
+        synchronized(powerLock)
+        { Integer powerGranted = claimPowerGrants.get(playerId); 
+        
+        if(powerGranted == null)
+            powerGranted = 0;
+            
+        return powerGranted;}
+    }
     
     public Map<UUID, Integer> getPowerPlayersHaveGranted()
-    {}
+    {
+        synchronized(powerLock)
+        { return new HashMap<UUID, Integer>(claimPowerGrants); }
+    }
     
     public void grantPower(UUID playerGranting, int amount) throws GrantingMoreClaimPowerThanHaveException
-    {}
+    {
+        try
+        {
+            EnkiProtection.getInstance().getPowerRegistry().removePower(playerGranting, amount);
+        }
+        catch(NotEnoughClaimPowerToRemoveException ex)
+        {
+            throw new GrantingMoreClaimPowerThanHaveException(playerGranting, ex.getAmountPlayerHadAvailable(), amount, )
+        }
+    }
     
     public void grantPower(EntityPlayer playerGranting, int amount) throws GrantingMoreClaimPowerThanHaveException
     {}
