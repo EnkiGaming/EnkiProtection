@@ -198,12 +198,25 @@ public class PlayerPower
     
     public void transferPowerTo(PlayerPower player, int amount) throws NotEnoughClaimPowerToRemoveException
     {
-        synchronized(powerLock)
-        {
-            
-        }
+        takePower(amount);
+        player.givePower(amount);
     }
     
     public void notifyOfPowerGrantReturn(Claim claim, int amount)
-    {  }
+    {
+        synchronized(powerLock)
+        {
+            Integer powerGranted = powerGrants.get(claim);
+            
+            if(powerGranted == null)
+                powerGranted = 0;
+            
+            powerGranted -= amount;
+            
+            if(powerGranted <= 0)
+                powerGrants.remove(claim);
+            else
+                powerGrants.put(claim, powerGranted);
+        }
+    }
 }

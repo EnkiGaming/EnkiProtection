@@ -126,12 +126,33 @@ public abstract class ClaimPower
             if(powerGranted == null)
                 powerGranted = 0;
             
+            QueuedRevocation queuedRevocation = revokeQueue.get(playerId);
+            
+            if(queuedRevocation != null)
+                powerGranted -= queuedRevocation.getAmount();
+            
             return powerGranted;
         }
     }
     
     public int getPowerGrantedBy(EntityPlayer player)
     { return getPowerGrantedBy(player.getGameProfile().getId()); }
+    
+    public int getPowerGrantedIncludingQueuedRevocationsBy(UUID playerId)
+    {
+        synchronized(powerGrants)
+        {
+            Integer powerGranted = powerGrants.get(playerId);
+            
+            if(powerGranted == null)
+                powerGranted = 0;
+            
+            return powerGranted;
+        }
+    }
+    
+    public int getPowerGrantedIncludingQueuedRevocationsBy(EntityPlayer player)
+    { return getPowerGrantedIncludingQueuedRevocationsBy(player.getGameProfile().getId()); }
     
     public int unmarkPowerAsGranted(UUID playerId, int amount) throws RevokingMorePowerThanAvailableException,
                                                                       RevokingMorePowerThanGrantedException
