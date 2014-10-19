@@ -96,6 +96,12 @@ public class Claim
         { return new ArrayList<ChunkCoOrdinate>(chunks); }
     }
     
+    public boolean hasChunk(ChunkCoOrdinate chunk)
+    {
+        synchronized(chunks)
+        { return chunks.contains(chunk); }
+    }
+    
     public boolean chunkIsInClaim(ChunkCoOrdinate chunk)
     {
         synchronized(chunks)

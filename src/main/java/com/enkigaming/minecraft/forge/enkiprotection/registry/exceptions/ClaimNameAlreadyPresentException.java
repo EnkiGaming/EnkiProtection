@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 
 public class ClaimNameAlreadyPresentException extends Exception
 {

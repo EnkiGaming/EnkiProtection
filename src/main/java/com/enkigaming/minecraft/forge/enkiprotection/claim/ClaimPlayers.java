@@ -57,7 +57,7 @@ public class ClaimPlayers
         return allies;
     }
     
-    public Collection<UUID> getBannedPlayes()
+    public Collection<UUID> getBannedPlayers()
     {
         Collection<UUID> banned = new HashSet<UUID>();
         

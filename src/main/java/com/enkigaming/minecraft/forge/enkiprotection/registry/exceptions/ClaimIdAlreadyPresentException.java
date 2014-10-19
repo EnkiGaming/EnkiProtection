@@ -1,6 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import java.util.UUID;
 
 public class ClaimIdAlreadyPresentException extends Exception
