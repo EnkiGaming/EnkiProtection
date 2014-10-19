@@ -347,6 +347,44 @@ public abstract class ClaimPower
     public int removeFromAmountQueuedForRevocation(EntityPlayer player, int amountToRemove)
     { return removeFromAmountQueuedForRevocation(player.getGameProfile().getId(), amountToRemove); }
     
+    public int setAmountQueuedForRevocationToMax(UUID playerId)
+    {
+        synchronized(powerGrants)
+        {
+            QueuedRevocation revocation = revokeQueue.get(playerId);
+            int amountGrantedTotal = getPowerGrantedIncludingQueuedRevocationsBy(playerId);
+            Date forceRevokeExpiry = new Date(new Date().getTime() + EnkiProtection.getInstance().getSettings().getNumberOfHoursUntilPowerRecovationExpires() * 3600000);
+            
+            if(revocation == null)
+            {
+                if(amountGrantedTotal <= 0)
+                    return 0;
+                else
+                {
+                    revocation = new QueuedRevocation(playerId, forceRevokeExpiry, amountGrantedTotal);
+                    revokeQueue.put(playerId, revocation);
+                    return amountGrantedTotal;
+                }
+            }
+            
+            if(amountGrantedTotal <= 0)
+                throw new IllegalStateException("Player had power queued to revoke despite not having granted any.");
+            
+            if(amountGrantedTotal <= revocation.getAmount())
+                throw new IllegalStateException("Player had more power queued to revoke than they had granted.");
+            
+            if(amountGrantedTotal == revocation.getAmount())
+                return amountGrantedTotal;
+            
+            revocation.setAmount(amountGrantedTotal);
+            revocation.setWhenToForceRevoke(forceRevokeExpiry);
+            return amountGrantedTotal;
+        }
+    }
+    
+    public int setAmountQueuedForRevocationToMax(EntityPlayer player)
+    { return setAmountQueuedForRevocationToMax(player.getGameProfile().getId()); }
+    
     public int getTotalPower()
     {
         int power = 0;

@@ -184,16 +184,16 @@ public class PlayerPower
         }
     }
     
-    public void queuePowerRevocation(Claim claim, int amount)
+    public void queuePowerRevocation(Claim claim, int amount) throws RevokingMorePowerThanGrantedException
     {
         synchronized(powerLock)
-        { claim.getPowerManager().queueRevocation(playerId, amount); }
+        { claim.getPowerManager().addToAmountQueuedForRevocation(playerId, amount); }
     }
     
     public void queuePowerRevocation(Claim claim)
     {
         synchronized(powerLock)
-        { claim.getPowerManager().queueRevocation(playerId); }
+        { claim.getPowerManager().setAmountQueuedForRevocationToMax(playerId); }
     }
     
     public void transferPowerTo(PlayerPower player, int amount) throws NotEnoughClaimPowerToRemoveException
