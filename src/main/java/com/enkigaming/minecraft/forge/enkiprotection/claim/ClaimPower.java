@@ -25,8 +25,11 @@ public class ClaimPower
     protected static class QueuedRevocation
     {
         public QueuedRevocation(UUID revokingPlayerId, Date forceRevokeOn, int amount)
+        { this(revokingPlayerId, new Date(), forceRevokeOn, amount); }
+        
+        public QueuedRevocation(UUID revokingPlayerId, Date whenStarted, Date forceRevokeOn, int amount)
         {
-            started = new Date();
+            this.started = whenStarted;
             this.forceRevokeOn = new Date(forceRevokeOn.getTime());
             this.amount = amount;
             this.playerId = revokingPlayerId;
@@ -177,15 +180,166 @@ public class ClaimPower
                 queuedRevokeNode.addChild(new TreeNode(amountTag + separator + entry.getValue().getAmount()));
                 queuedRevokeNode.addChild(new TreeNode(dateStartedTag + " " + unixTimeTag + separator + entry.getValue().getWhenStarted().getTime()));
                 queuedRevokeNode.addChild(new TreeNode(dateDueTag + " " + unixTimeTag + separator + entry.getValue().getWhenToForceRevoke().getTime()));
+                queuedRevokeNode.addChild(new TreeNode(""));
             }
         }
         
         return baseNode;
     }
     
-    public static ClaimPower fromTreeNode() throws UnableToParseTreeNodeException
+    public static ClaimPower fromTreeNode(TreeNode node) throws UnableToParseTreeNodeException
     {
+        ClaimPower claimPower = new ClaimPower();
         
+        for(TreeNode subNode : node.getChildren())
+        {
+            if(subNode.getName().toUpperCase().startsWith(powerGrantsTag.toUpperCase()))
+            {
+                for(TreeNode powerGrantNode : subNode.getChildren())
+                {
+                    UUID playerId = getPlayerIdFromNodeName(powerGrantNode.getName().trim());
+                    
+                    if(playerId == null) // If this tree node isn't a player id, and thus can't be used.
+                    {
+                        System.out.println("Could not parse \"" + powerGrantNode.getName() + "\" into a UUID for power grants.");
+                        continue;
+                    }
+                    
+                    for(TreeNode grantSubNode : powerGrantNode.getChildren())
+                    {
+                        if(grantSubNode.getName().toUpperCase().startsWith(amountTag.toUpperCase()))
+                        {
+                            Integer amount = getAmountFromAmountNodeName(grantSubNode.getName());
+                            
+                            if(amount == null)
+                            {
+                                System.out.println("Could not parse \"" + grantSubNode.getName() + "\" into an integer.");
+                                continue;
+                            }
+                            
+                            claimPower.powerGrants.put(playerId, amount);
+                        }
+                    }
+                }
+            }
+            else if(subNode.getName().toUpperCase().startsWith(revokeQueueTag.toUpperCase()))
+            {
+                for(TreeNode queuedRevocationNode : subNode.getChildren())
+                {
+                    UUID playerId = getPlayerIdFromNodeName(queuedRevocationNode.getName().trim());
+                    
+                    if(playerId == null) // If this tree node isn't a player id, and thus can't be used.
+                    {
+                        System.out.println("Could not parse \"" + queuedRevocationNode.getName() + "\" into a UUID for queued revocations. ");
+                        continue;
+                    }
+                    
+                    Date whenStarted = null;
+                    Date whenToExpire = null;
+                    int amount = 0;
+                    
+                    for(TreeNode revocationSubNode : queuedRevocationNode.getChildren())
+                    {
+                        if(revocationSubNode.getName().toUpperCase().startsWith(amountTag.toUpperCase()))
+                        {
+                            Integer currentAmount = getAmountFromAmountNodeName(revocationSubNode.getName());
+                            
+                            if(currentAmount == null)
+                            {
+                                System.out.println("Could not parse \"" + revocationSubNode.getName() + "\" into an integer.");
+                                continue;
+                            }
+                            
+                            amount = currentAmount;
+                        }
+                        else if(revocationSubNode.getName().toUpperCase().startsWith(dateStartedTag.toUpperCase()))
+                        {
+                            Long currentWhenStarted = getTimeFromNodeName(revocationSubNode.getName());
+                            
+                            if(currentWhenStarted == null)
+                            {
+                                System.out.println("Could not parse \"" + revocationSubNode.getName() + "\" into a long integer.");
+                                continue;
+                            }
+                            
+                            whenStarted = new Date(currentWhenStarted);
+                        }
+                        else if(revocationSubNode.getName().toUpperCase().startsWith(dateDueTag.toUpperCase()))
+                        {
+                            Long currentWhenToExpire = getTimeFromNodeName(revocationSubNode.getName());
+                            
+                            if(currentWhenToExpire == null)
+                            {
+                                System.out.println("Could not parse \"" + revocationSubNode.getName() + "\" into a long integer.");
+                                continue;
+                            }
+                            
+                            whenStarted = new Date(currentWhenToExpire);
+                        }
+                    }
+                    
+                    QueuedRevocation revocation = new QueuedRevocation(playerId, whenStarted, whenToExpire, amount);
+                    claimPower.revokeQueue.put(playerId, revocation);
+                }
+            }
+        }
+        
+        return claimPower;
+    }
+    
+    protected static UUID getPlayerIdFromNodeName(String nodeName)
+    {
+        UUID playerId;
+        String name = nodeName;
+        String[] nodeNameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nodeNameParts.length >= 2)
+            name = nodeNameParts[nodeNameParts.length - 1];
+        
+        try
+        { playerId = UUID.fromString(name.trim()); }
+        catch(IllegalArgumentException exception)
+        { return null; }
+        
+        return playerId;
+    }
+    
+    protected static Integer getAmountFromAmountNodeName(String nodeName)
+    {
+        Integer amount;
+        String name;
+        String[] nodeNameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nodeNameParts.length < 2)
+            return null;
+        
+        name = nodeNameParts[nodeNameParts.length - 1];
+        
+        try
+        { amount = Integer.parseInt(name); }
+        catch(NumberFormatException exception)
+        { return null; }
+        
+        return amount;
+    }
+    
+    protected static Long getTimeFromNodeName(String nodeName)
+    {
+        Long time;
+        String name;
+        String[] nodeNameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nodeNameParts.length < 2)
+            return null;
+        
+        name = nodeNameParts[nodeNameParts.length - 1];
+        
+        try
+        { time = Long.parseLong(name); }
+        catch(NumberFormatException exception)
+        { return null; }
+        
+        return time;
     }
     
     public void markPowerAsGranted(UUID playerId, int amount)
