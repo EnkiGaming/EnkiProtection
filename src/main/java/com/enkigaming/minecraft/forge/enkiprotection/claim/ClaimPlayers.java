@@ -26,6 +26,76 @@ public class ClaimPlayers
     public ClaimPlayers()
     { this.ownerId = null; }
     
+    public ClaimPlayers(TreeNode treeNode) throws UnableToParseTreeNodeException
+    {
+        this();
+        UUID ownerId = null;
+        
+        SearchForOwnerId:
+        for(TreeNode node : treeNode.getChildren())
+            if(node.getName().equalsIgnoreCase(ownerTag))
+            {
+                if(node.getChildren().size() <= 0)
+                    throw new UnableToParseTreeNodeException(treeNode, "Does not contain any entries for 'Owner'");
+                
+                try
+                { ownerId = getUUIDFromNameString(node.getChildren().get(0).getName()); }
+                catch(IllegalArgumentException exception)
+                { throw new UnableToParseTreeNodeException(treeNode, "Owner player id does not parse to a valid UUID"); }
+                
+                break SearchForOwnerId;
+            }
+        
+        if(ownerId == null)
+            throw new UnableToParseTreeNodeException(treeNode, "ClaimPlayer objects must have an assigned owner.");
+        
+        this.ownerId = ownerId;
+        UUID playerId = null;
+        
+        for(TreeNode node : treeNode.getChildren())
+        {
+            if(node.getName().equalsIgnoreCase(membersTag))
+            {
+                for(TreeNode memberNode : node.getChildren())
+                {
+                    try
+                    {
+                        playerId = getUUIDFromNameString(memberNode.getName());
+                        players.put(playerId, PlayerRelation.member);
+                    }
+                    catch(IllegalArgumentException exception)
+                    { }
+                }
+            }
+            else if(node.getName().equalsIgnoreCase(alliesTag))
+            {
+                for(TreeNode allyNode : node.getChildren())
+                {
+                    try
+                    {
+                        playerId = getUUIDFromNameString(allyNode.getName());
+                        players.put(playerId, PlayerRelation.ally);
+                    }
+                    catch(IllegalArgumentException exception)
+                    { }
+                }
+            }
+            else if(node.getName().equalsIgnoreCase(bannedTag))
+            {
+                for(TreeNode bannedNode : node.getChildren())
+                {
+                    try
+                    {
+                        playerId = getUUIDFromNameString(bannedNode.getName());
+                        players.put(playerId, PlayerRelation.bannedfrom);
+                    }
+                    catch(IllegalArgumentException exception)
+                    { }
+                }
+            }
+        }
+    }
+    
     protected UUID ownerId; // Synchronise with players
     protected final Map<UUID, PlayerRelation> players = new HashMap<UUID, PlayerRelation>();
     
@@ -77,72 +147,7 @@ public class ClaimPlayers
     }
     
     public static ClaimPlayers fromTreeNode(TreeNode treeNode) throws UnableToParseTreeNodeException
-    {
-        UUID ownerId = null;
-        
-        SearchForOwnerId:
-        for(TreeNode node : treeNode.getChildren())
-            if(node.getName().equalsIgnoreCase(ownerTag))
-            {
-                if(node.getChildren().size() <= 0)
-                    throw new UnableToParseTreeNodeException(treeNode, "Does not contain any entries for 'Owner'");
-                
-                try
-                { ownerId = getUUIDFromNameString(node.getChildren().get(0).getName()); }
-                catch(IllegalArgumentException exception)
-                { throw new UnableToParseTreeNodeException(treeNode, "Owner player id does not parse to a valid UUID"); }
-                
-                break SearchForOwnerId;
-            }
-        
-        if(ownerId == null)
-            throw new UnableToParseTreeNodeException(treeNode, "ClaimPlayer objects must have an assigned owner.");
-        
-        ClaimPlayers playerManager = new ClaimPlayers(ownerId);
-        UUID playerId = null;
-        
-        for(TreeNode node : treeNode.getChildren())
-        {
-            if(node.getName().equalsIgnoreCase(membersTag))
-            {
-                for(TreeNode memberNode : node.getChildren())
-                {
-                    try
-                    { playerId = getUUIDFromNameString(memberNode.getName()); }
-                    catch(IllegalArgumentException exception)
-                    { }
-                    
-                    playerManager.players.put(playerId, PlayerRelation.member);
-                }
-            }
-            else if(node.getName().equalsIgnoreCase(alliesTag))
-            {
-                for(TreeNode allyNode : node.getChildren())
-                {
-                    try
-                    { playerId = getUUIDFromNameString(allyNode.getName()); }
-                    catch(IllegalArgumentException exception)
-                    { }
-                    
-                    playerManager.players.put(playerId, PlayerRelation.ally);
-                }
-            }
-            else if(node.getName().equalsIgnoreCase(bannedTag))
-            {
-                for(TreeNode bannedNode : node.getChildren())
-                {
-                    try
-                    { playerId = getUUIDFromNameString(bannedNode.getName()); }
-                    catch(IllegalArgumentException exception)
-                    { }
-                    
-                    playerManager.players.put(playerId, PlayerRelation.bannedfrom);
-                }
-            }
-        }
-        
-        return playerManager;
-    }
+    { return new ClaimPlayers(treeNode); }
     
     protected static UUID getUUIDFromNameString(String nameString) throws IllegalArgumentException
     {
