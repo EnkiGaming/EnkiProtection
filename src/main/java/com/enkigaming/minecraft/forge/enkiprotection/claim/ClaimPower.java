@@ -1,5 +1,8 @@
 package com.enkigaming.minecraft.forge.enkiprotection.claim;
 
+import com.enkigaming.mcforge.enkilib.EnkiLib;
+import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
+import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
@@ -9,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -123,6 +127,66 @@ public class ClaimPower
     
     final Collection<ForceRevokeListener> forceRevokeListeners = new ArrayList<ForceRevokeListener>();
     final Collection<QueuedRevocationExpirationListener> queuedRevocationExpirationListeners = new ArrayList<QueuedRevocationExpirationListener>();
+    
+    protected static final String powerTag = "Power";
+    protected static final String powerGrantsTag = "Power Grants";
+    protected static final String revokeQueueTag = "Revoke Queue";
+    protected static final String amountTag = "Amount";
+    protected static final String dateStartedTag = "Started";
+    protected static final String dateDueTag = "Date due";
+    protected static final String unixTimeTag = "(Unix time, milliseconds)";
+    protected static final String separator = ": ";
+    
+    public TreeNode toTreeNode()
+    {
+        TreeNode baseNode = new TreeNode(powerTag + separator);
+        TreeNode powerGrantsNode = new TreeNode(powerGrantsTag + separator);
+        TreeNode revokeQueueNode = new TreeNode(revokeQueueTag + separator);
+        
+        baseNode.addChild(powerGrantsNode);
+        baseNode.addChild(revokeQueueNode);
+        
+        synchronized(powerGrants)
+        {
+            for(Entry<UUID, Integer> entry : powerGrants.entrySet())
+            {
+                String lastRecordedName = EnkiLib.getLastRecordedNameOf(entry.getKey());
+                String nameString = "";
+                
+                if(lastRecordedName != null)
+                    nameString += lastRecordedName + separator;
+                    
+                TreeNode grantNode = new TreeNode(nameString + entry.getKey().toString());
+                powerGrantsNode.addChild(grantNode);
+                
+                grantNode.addChild(new TreeNode(amountTag + separator + entry.getValue().toString()));
+                grantNode.addChild(new TreeNode(""));
+            }
+            
+            for(Entry<UUID, QueuedRevocation> entry : revokeQueue.entrySet())
+            {
+                String lastRecordedName = EnkiLib.getLastRecordedNameOf(entry.getKey());
+                String nameString = "";
+                
+                if(lastRecordedName != null)
+                    nameString += lastRecordedName + separator;
+                
+                TreeNode queuedRevokeNode = new TreeNode(nameString + entry.getKey().toString());
+                revokeQueueNode.addChild(queuedRevokeNode);
+                
+                queuedRevokeNode.addChild(new TreeNode(amountTag + separator + entry.getValue().getAmount()));
+                queuedRevokeNode.addChild(new TreeNode(dateStartedTag + " " + unixTimeTag + separator + entry.getValue().getWhenStarted().getTime()));
+                queuedRevokeNode.addChild(new TreeNode(dateDueTag + " " + unixTimeTag + separator + entry.getValue().getWhenToForceRevoke().getTime()));
+            }
+        }
+        
+        return baseNode;
+    }
+    
+    public static ClaimPower fromTreeNode() throws UnableToParseTreeNodeException
+    {
+        
+    }
     
     public void markPowerAsGranted(UUID playerId, int amount)
     {
