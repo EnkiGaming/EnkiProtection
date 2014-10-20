@@ -28,21 +28,21 @@ public class Claim
     
     protected final ClaimRegistry registry;
     
-    protected final ClaimSettings settings = new ClaimSettings();
-    protected final ClaimPlayers players = new ClaimPlayers();
-    protected final ClaimPower power = makeClaimPower();
+    protected ClaimSettings settings = new ClaimSettings();
+    protected ClaimPlayers players = new ClaimPlayers();
+    protected ClaimPower power = new ClaimPower() {{ registerListenersToClaimPower(this); }};
     protected final Set<ChunkCoOrdinate> chunks = new HashSet<ChunkCoOrdinate>();
     
     protected final Object nameLock = new Object();
     
-    public ClaimPower makeClaimPower()
+    void registerListenersToClaimPower(ClaimPower claimPower)
     {
-        return new ClaimPower()
+        claimPower.addListener(new ClaimPower.ForceRevokeListener()
         {
             @Override
-            public void onForceRevoke(UUID playerRevoking, int amountBeingRevoked, int amountMoreThanAvailablePowerBeingRevoked)
+            public void onForceRevoke(UUID playerRevoking, int amountBeingRevoked, int amountMoreThanAvailableBeingRevoked)
             {
-                for(int i = 0; i < amountMoreThanAvailablePowerBeingRevoked; i++)
+                for(int i = 0; i < amountMoreThanAvailableBeingRevoked; i++)
                 {
                     synchronized(chunks)
                     {
@@ -55,18 +55,21 @@ public class Claim
                     }
                 }
             }
-
+        });
+        
+        claimPower.addListener(new ClaimPower.QueuedRevocationExpirationListener()
+        {
+            @Override
+            public void onQueuedRevocationExpiration(UUID playerId, int amount)
+            { EnkiProtection.getInstance().getPowerRegistry().getForPlayer(playerId).notifyOfPowerGrantReturn(Claim.this, amount); }
+        });
+        
+        claimPower.setPowerUsedGetter(new ClaimPower.PowerUsedGetter()
+        {
             @Override
             public int getPowerUsed()
-            {
-                synchronized(chunks)
-                { return chunks.size(); }
-            }
-
-            @Override
-            public void notifyPlayerPowerOfRevocation(UUID playerId, int amount)
-            { EnkiProtection.getInstance().getPowerRegistry().getForPlayer(playerId).notifyOfPowerGrantReturn(Claim.this, amount); }
-        };
+            { return chunks.size(); }
+        });
     }
     
     public UUID getId()

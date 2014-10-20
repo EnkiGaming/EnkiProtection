@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minecraft.entity.player.EntityPlayer;
-import org.apache.commons.lang3.NotImplementedException;
 
 // Need to check over power revocation queueing.
 
-public abstract class ClaimPower
+public class ClaimPower
 {
     protected static class QueuedRevocation
     {
@@ -101,8 +101,28 @@ public abstract class ClaimPower
         }
     }
     
+    // The following subclasses stand as a testament to why we should have per-object/OO-style events. If I import the
+    // events system from my personal library into EnkiLib/EnkiCore, replace this to use that instead.
+    
+    static abstract class ForceRevokeListener
+    { public abstract void onForceRevoke(UUID playerRevoking, int amountBeingRevoked, int amountMoreThanAvailableBeingRevoked); }
+    
+    static abstract class PowerUsedGetter
+    { public abstract int getPowerUsed(); }
+    
+    static abstract class QueuedRevocationExpirationListener
+    { public abstract void onQueuedRevocationExpiration(UUID playerId, int amount); }
+    
+    public ClaimPower()
+    { }
+    
     protected final Map<UUID, Integer> powerGrants = new HashMap<UUID, Integer>();
     protected final Map<UUID, QueuedRevocation> revokeQueue = new HashMap<UUID, QueuedRevocation>(); // synchronized with powerGrants
+    
+    PowerUsedGetter powerUsedGetter = null;
+    
+    final Collection<ForceRevokeListener> forceRevokeListeners = new ArrayList<ForceRevokeListener>();
+    final Collection<QueuedRevocationExpirationListener> queuedRevocationExpirationListeners = new ArrayList<QueuedRevocationExpirationListener>();
     
     public void markPowerAsGranted(UUID playerId, int amount)
     {
@@ -465,9 +485,44 @@ public abstract class ClaimPower
         }
     }
     
-    public abstract void onForceRevoke(UUID playerRevoking, int amountBeingRevoked, int amountMoreThanAvailablePowerBeingRevoked);
+    protected void onForceRevoke(UUID playerRevoking, int amountBeingRevoked, int amountMoreThanAvailablePowerBeingRevoked)
+    {
+        synchronized(forceRevokeListeners)
+        {
+            for(ForceRevokeListener listener : forceRevokeListeners)
+                listener.onForceRevoke(playerRevoking, amountBeingRevoked, amountMoreThanAvailablePowerBeingRevoked);
+        }
+    }
     
-    public abstract int getPowerUsed();
+    protected int getPowerUsed()
+    {
+        if(powerUsedGetter == null)
+            return 0;
+        
+        return powerUsedGetter.getPowerUsed();
+    }
     
-    public abstract void notifyPlayerPowerOfRevocation(UUID playerId, int amount);
+    protected void notifyPlayerPowerOfRevocation(UUID playerId, int amount)
+    {
+        synchronized(queuedRevocationExpirationListeners)
+        {
+            for(QueuedRevocationExpirationListener listener : queuedRevocationExpirationListeners)
+                listener.onQueuedRevocationExpiration(playerId, amount);
+        }
+    }
+    
+    void setPowerUsedGetter(PowerUsedGetter getter)
+    { powerUsedGetter = getter; }
+    
+    void addListener(ForceRevokeListener listener)
+    {
+        synchronized(forceRevokeListeners)
+        { forceRevokeListeners.add(listener); }
+    }
+    
+    void addListener(QueuedRevocationExpirationListener listener)
+    {
+        synchronized(queuedRevocationExpirationListeners)
+        { queuedRevocationExpirationListeners.add(listener); }
+    }
 }
