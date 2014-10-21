@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.registry;
+package com.enkigaming.minecraft.forge.enkiprotection.playerpower;
 
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.GrantingMoreClaimPowerThanHaveException;
@@ -217,6 +217,33 @@ public class PlayerPower
                 powerGrants.remove(claim);
             else
                 powerGrants.put(claim, powerGranted);
+        }
+    }
+    
+    public void clearGrantsInThisOnly()
+    {
+        synchronized(powerLock)
+        { powerGrants.clear(); }
+    }
+    
+    public void recordGrantInThisOnly(Claim grantTo, int amount)
+    {
+        synchronized(powerLock)
+        { powerGrants.put(grantTo, amount); }
+    }
+    
+    public void recordGrantsInThisOnly(Map<Claim, Integer> grants)
+    {
+        synchronized(powerLock)
+        { powerGrants.putAll(grants); }
+    }
+    
+    public void setGrantsInThisOnly(Map<Claim, Integer> grants)
+    {
+        synchronized(powerLock)
+        {
+            powerGrants.clear();
+            powerGrants.putAll(grants);
         }
     }
 }

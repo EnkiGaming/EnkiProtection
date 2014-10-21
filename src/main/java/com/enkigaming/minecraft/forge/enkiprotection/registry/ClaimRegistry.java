@@ -35,7 +35,7 @@ public class ClaimRegistry
     
     protected FileHandler makeFileHandler(File saveFolder)
     {
-        return new TreeFileHandler("ClaimRegistry", saveFolder, "Not all claims could be read. Those that could be, were.")
+        return new TreeFileHandler("ClaimRegistry", new File(saveFolder, "Claims.txt"), "Not all claims could be read. Those that could be, were.")
         {
             @Override
             protected void preSave()

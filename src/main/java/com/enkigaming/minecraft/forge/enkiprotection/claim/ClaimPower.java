@@ -396,6 +396,37 @@ public class ClaimPower
     public int getPowerGrantedIncludingQueuedRevocationsBy(EntityPlayer player)
     { return getPowerGrantedIncludingQueuedRevocationsBy(player.getGameProfile().getId()); }
     
+    public Map<UUID, Integer> getPowerGrants()
+    {
+        synchronized(powerGrants)
+        {
+            Map<UUID, Integer> grants = new HashMap<UUID, Integer>(powerGrants);
+            
+            for(Entry<UUID, QueuedRevocation> entry : revokeQueue.entrySet())
+            {
+                Integer granted = grants.get(entry.getKey());
+                
+                if(granted == null)
+                    continue;
+                
+                granted -= entry.getValue().getAmount();
+                
+                if(granted < 0)
+                    granted = 0;
+                
+                grants.put(entry.getKey(), granted);
+            }
+            
+            return grants;
+        }
+    }
+    
+    public Map<UUID, Integer> getPowerGrantsIncludingQueuedRevocations()
+    {
+        synchronized(powerGrants)
+        { return new HashMap<UUID, Integer>(powerGrants); }
+    }
+    
     public int unmarkPowerAsGranted(UUID playerId, int amount) throws RevokingMorePowerThanAvailableException,
                                                                       RevokingMorePowerThanGrantedException
     {
