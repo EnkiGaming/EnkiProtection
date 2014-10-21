@@ -2,11 +2,9 @@ package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.Utils;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import java.util.Set;
-import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;

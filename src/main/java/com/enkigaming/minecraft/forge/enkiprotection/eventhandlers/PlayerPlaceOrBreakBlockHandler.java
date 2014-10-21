@@ -2,7 +2,7 @@ package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class PlayerPlaceOrBreakBlockHandler
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
         
-        if(claim != null && !claim.canBreakOrPlaceBlocks(event.getPlayer()))
+        if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.getPlayer()))
         {
             event.setCanceled(true);
             event.getPlayer().addChatMessage(new ChatComponentText(Strings.getStringCantBreakBlocks(claim.getName())));
@@ -38,7 +38,7 @@ public class PlayerPlaceOrBreakBlockHandler
         
         Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
         
-        if(claim != null && !claim.canBreakOrPlaceBlocks(event.player))
+        if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.player))
         {
             event.setCanceled(true);
             event.player.addChatMessage(new ChatComponentText(Strings.getStringCantPlaceBlocks(claim.getName())));
@@ -59,7 +59,7 @@ public class PlayerPlaceOrBreakBlockHandler
         {
             Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtChunk(chunk);
             
-            if(claim != null && !claim.canBreakOrPlaceBlocks(event.player))
+            if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.player))
             {
                 event.setCanceled(true);
                 event.player.addChatMessage(new ChatComponentText(Strings.getStringCantPlaceBlocks(claim.getName())));

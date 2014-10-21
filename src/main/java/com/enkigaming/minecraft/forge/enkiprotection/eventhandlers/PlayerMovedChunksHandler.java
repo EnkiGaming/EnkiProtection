@@ -2,7 +2,7 @@ package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

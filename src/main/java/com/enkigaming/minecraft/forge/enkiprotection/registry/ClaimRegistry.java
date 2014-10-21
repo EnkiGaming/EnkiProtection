@@ -164,6 +164,9 @@ public class ClaimRegistry
         { claimsLock.unlock(); }
     }
     
+    public Claim getClaimAtChunk(Chunk chunk)
+    { return getClaimAtChunk(new ChunkCoOrdinate(chunk)); }
+    
     public Collection<Claim> getClaimsPlayerIsOwnerOf(UUID playerId)
     {
         claimsLock.lock();
