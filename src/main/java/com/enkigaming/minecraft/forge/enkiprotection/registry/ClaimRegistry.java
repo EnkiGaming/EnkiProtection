@@ -1,7 +1,10 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
+import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.mcforge.enkilib.filehandling.FileHandler;
+import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimIdAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -31,7 +35,69 @@ public class ClaimRegistry
     
     protected FileHandler makeFileHandler(File saveFolder)
     {
-        
+        return new TreeFileHandler("ClaimRegistry", saveFolder, "Not all claims could be read. Those that could be, were.")
+        {
+            @Override
+            protected void preSave()
+            { claimsLock.lock(); }
+
+            @Override
+            protected List<TreeNode> getTreeStructureOfSaveData()
+            {
+                List<TreeNode> tree = new ArrayList<TreeNode>();
+                
+                for(Claim claim : claims.values())
+                {
+                    tree.add(claim.toTreeNode());
+                    tree.add(new TreeNode(""));
+                }
+                
+                return tree;
+            }
+
+            @Override
+            protected void postSave()
+            { claimsLock.unlock(); }
+
+            @Override
+            protected void preInterpretation()
+            {
+                claimsLock.lock();
+                claims.clear();
+            }
+
+            @Override
+            protected boolean interpretTree(List<TreeNode> list)
+            {
+                boolean loadedSuccessfully = true;
+                
+                for(TreeNode node : list)
+                {
+                    Claim claim;
+                    
+                    try
+                    { claim = new Claim(node, ClaimRegistry.this); }
+                    catch(UnableToParseTreeNodeException exception)
+                    {
+                        System.out.println("Unable to parse claim: \"" + node.getName() + "\"");
+                        loadedSuccessfully = false;
+                        continue;
+                    }
+                    
+                    claims.put(claim.getId(), claim);
+                }
+                
+                return loadedSuccessfully;
+            }
+
+            @Override
+            protected void postInterpretation()
+            { claimsLock.unlock(); }
+
+            @Override
+            protected void onNoFileToInterpret()
+            { }
+        };
     }
     
     public Claim getClaim(UUID claimId)
