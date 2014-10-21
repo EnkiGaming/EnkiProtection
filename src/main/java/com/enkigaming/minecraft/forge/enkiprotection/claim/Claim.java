@@ -1,5 +1,7 @@
 package com.enkigaming.minecraft.forge.enkiprotection.claim;
 
+import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
+import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
@@ -7,6 +9,7 @@ import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAl
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +26,94 @@ public class Claim
         this.registry = registry;
     }
     
+    public Claim(TreeNode node, ClaimRegistry registry) throws UnableToParseTreeNodeException
+    {
+        this.registry = registry;
+        
+        UUID id = getClaimUUIDFromNodeName(node.getName());
+        String name = getClaimNameFromNodeName(node.getName());
+        
+        if(id == null || name == null)
+            throw new UnableToParseTreeNodeException(node, "Cannot parse claim name/id \"" + node.getName() + "\"");
+        
+        this.claimId = id;
+        this.name = name;
+        
+        for(TreeNode subNode : node.getChildren())
+        {
+            if(subNode.getName().toUpperCase().startsWith(settingsTag.toUpperCase()))
+                settings = new ClaimSettings(subNode);
+            else if(subNode.getName().toUpperCase().startsWith(playersTag.toUpperCase()))
+                players = new ClaimPlayers(subNode);
+            else if(subNode.getName().toUpperCase().startsWith(powerTag.toUpperCase()))
+                power = new ClaimPower() {{ registerListenersToClaimPower(this); }};
+            else if(subNode.getName().toUpperCase().startsWith(chunksTag.toUpperCase()))
+            {
+                for(TreeNode chunkNode : subNode.getChildren())
+                {
+                    if(chunkNode.getName().toUpperCase().startsWith(chunkTag.toUpperCase()))
+                    {
+                        Integer x = null;
+                        Integer z = null;
+                        Integer worldId = null;
+                        
+                        for(TreeNode chunkSubNode : chunkNode.getChildren())
+                        {
+                            if     (chunkSubNode.getName().toUpperCase().startsWith(xCoOrdTag.toUpperCase())) // <editor-fold desc="{...}">
+                            {
+                                Integer currentX = getIntFromNodeName(chunkSubNode.getName());
+                                
+                                if(currentX == null)
+                                {
+                                    System.out.println("Could not parse int \"" + chunkSubNode.getName() + "\".");
+                                    continue;
+                                }
+                                
+                                x = currentX;
+                            } // </editor-fold>
+                            else if(chunkSubNode.getName().toUpperCase().startsWith(zCoOrdTag.toUpperCase())) // <editor-fold desc="{...}">
+                            {
+                                Integer currentZ = getIntFromNodeName(chunkSubNode.getName());
+                                
+                                if(currentZ == null)
+                                {
+                                    System.out.println("Could not parse int \"" + chunkSubNode.getName() + "\".");
+                                    continue;
+                                }
+                                
+                                x = currentZ;
+                            } // </editor-fold>
+                            else if(chunkSubNode.getName().toUpperCase().startsWith(worldIdTag.toUpperCase())) // <editor-fold desc="{...}">
+                            {
+                                Integer currentWorldId = getIntFromNodeName(chunkSubNode.getName());
+                                
+                                if(currentWorldId == null)
+                                {
+                                    System.out.println("Could not parse int world ID \"" + chunkSubNode.getName() + "\".");
+                                    continue;
+                                }
+                                
+                                x = currentWorldId;
+                            } // </editor-fold>
+                        }
+
+                        if(x != null && z != null)
+                        {
+                            ChunkCoOrdinate chunk;
+                            
+                            if(worldId != null)
+                                chunk = new ChunkCoOrdinate(x, z, worldId);
+                            else
+                                chunk = new ChunkCoOrdinate(x, z);
+                            
+                            chunks.add(chunk);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     protected final UUID claimId;
     protected String name;
     
@@ -34,6 +125,17 @@ public class Claim
     protected final Set<ChunkCoOrdinate> chunks = new HashSet<ChunkCoOrdinate>();
     
     protected final Object nameLock = new Object();
+    
+    protected final static String nameTag     = "Name";
+    protected final static String settingsTag = "Settings";
+    protected final static String playersTag  = "Players";
+    protected final static String powerTag    = "Power";
+    protected final static String chunksTag   = "Chunks";
+    protected final static String chunkTag    = "Chunk";
+    protected final static String xCoOrdTag   = "X";
+    protected final static String zCoOrdTag   = "Z";
+    protected final static String worldIdTag  = "World ID";
+    protected final static String separator   = ": ";
     
     void registerListenersToClaimPower(ClaimPower claimPower)
     {
@@ -70,6 +172,87 @@ public class Claim
             public int getPowerUsed()
             { return chunks.size(); }
         });
+    }
+    
+    public TreeNode toTreeNode()
+    {
+        TreeNode baseNode = new TreeNode(name + separator + claimId.toString());
+        TreeNode chunksNode = new TreeNode(chunksTag + separator);
+        
+        baseNode.addChild(settings.toTreeNode());
+        baseNode.addChild(players.toTreeNode());
+        baseNode.addChild(power.toTreeNode());
+        
+        baseNode.addChildren(Arrays.asList(settings.toTreeNode(),
+                                           players .toTreeNode(),
+                                           power   .toTreeNode(),
+                                           chunksNode));
+        
+        for(ChunkCoOrdinate chunk : chunks)
+        {
+            TreeNode chunkNode = new TreeNode(chunkTag);
+            TreeNode xNode = new TreeNode(xCoOrdTag + separator + Integer.toString(chunk.getXCoOrd()));
+            TreeNode zNode = new TreeNode(zCoOrdTag + separator + Integer.toString(chunk.getZCoOrd()));
+            TreeNode worldNode = null;
+            
+            if(chunk.hasSpecifiedWorld())
+                worldNode = new TreeNode(worldIdTag + separator + Integer.toString(chunk.getWorldID()));
+            
+            chunkNode.addChildren(Arrays.asList(xNode, zNode));
+            
+            if(worldNode != null)
+                chunkNode.addChild(worldNode);
+            
+            chunksNode.addChild(chunkNode);
+        }
+        
+        return baseNode;
+    }
+    
+    static UUID getClaimUUIDFromNodeName(String nodeName)
+    {
+        String[] nameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nameParts.length < 2)
+            return null;
+        
+        String uuidString = nameParts[nameParts.length - 1].trim();
+        UUID claimId;
+        
+        try
+        { claimId = UUID.fromString(uuidString); }
+        catch(IllegalArgumentException exception)
+        { return null; }
+        
+        return claimId;
+    }
+    
+    static String getClaimNameFromNodeName(String nodeName)
+    {
+        String[] nameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nameParts.length < 2)
+            return null;
+        
+        return nameParts[0].trim();
+    }
+    
+    static Integer getIntFromNodeName(String nodeName)
+    {
+        String[] nameParts = nodeName.split("\\Q" + separator + "\\E");
+        
+        if(nameParts.length < 2)
+            return null;
+        
+        String intString = nameParts[nameParts.length - 1].trim();
+        Integer returnInt;
+        
+        try
+        { returnInt = Integer.parseInt(intString); }
+        catch(NumberFormatException exception)
+        { return null; }
+        
+        return returnInt;
     }
     
     public UUID getId()
@@ -162,7 +345,8 @@ public class Claim
         }
     }
     
-    public void claimChunk(ChunkCoOrdinate chunk) throws ChunkAlreadyClaimedException, NotEnoughClaimPowerToClaimException
+    public void claimChunk(ChunkCoOrdinate chunk) throws ChunkAlreadyClaimedException,
+                                                         NotEnoughClaimPowerToClaimException
     {
         int availablePower = power.getAvailablePower();
         
@@ -178,7 +362,8 @@ public class Claim
         { chunks.add(chunk); }
     }
     
-    public void claimChunk(Chunk chunk) throws ChunkAlreadyClaimedException, NotEnoughClaimPowerToClaimException
+    public void claimChunk(Chunk chunk) throws ChunkAlreadyClaimedException,
+                                               NotEnoughClaimPowerToClaimException
     { claimChunk(new ChunkCoOrdinate(chunk)); }
     
     public boolean unclaimChunk(ChunkCoOrdinate chunk)

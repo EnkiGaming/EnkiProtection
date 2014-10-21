@@ -99,30 +99,30 @@ public class ClaimPlayers
     protected UUID ownerId; // Synchronise with players
     protected final Map<UUID, PlayerRelation> players = new HashMap<UUID, PlayerRelation>();
     
-    protected static final String playersTag = "Players: ";
-    protected static final String ownerTag = "Owner: ";
-    protected static final String membersTag = "Members: ";
-    protected static final String alliesTag = "Allies: ";
-    protected static final String bannedTag = "Banned Players: ";
-    protected static final String playerNameIdSeparator = ": ";
+    protected static final String playersTag = "Players";
+    protected static final String ownerTag = "Owner";
+    protected static final String membersTag = "Members";
+    protected static final String alliesTag = "Allies";
+    protected static final String bannedTag = "Banned Players";
+    protected static final String separator = ": ";
     
     public TreeNode toTreeNode()
     {
-        TreeNode baseNode = new TreeNode(playersTag);
+        TreeNode baseNode = new TreeNode(playersTag + separator);
         
-        TreeNode ownerNode = new TreeNode(ownerTag);
+        TreeNode ownerNode = new TreeNode(ownerTag + separator);
         baseNode.addChild(ownerNode);
         
         String name = EnkiLib.getInstance().getUsernameCache().getLastRecordedNameOf(ownerId);
         
         if(name != null)
-            ownerNode.addChild(new TreeNode(name + playerNameIdSeparator + ownerId.toString()));
+            ownerNode.addChild(new TreeNode(name + separator + ownerId.toString()));
         else
             ownerNode.addChild(new TreeNode(ownerId.toString()));
         
-        TreeNode membersNode = new TreeNode(membersTag);
-        TreeNode alliesNode = new TreeNode(alliesTag);
-        TreeNode bannedNode = new TreeNode(bannedTag);
+        TreeNode membersNode = new TreeNode(membersTag + separator);
+        TreeNode alliesNode = new TreeNode(alliesTag + separator);
+        TreeNode bannedNode = new TreeNode(bannedTag + separator);
         
         for(Entry<UUID, PlayerRelation> entry : players.entrySet())
         {
@@ -130,7 +130,7 @@ public class ClaimPlayers
             String playerString = "";
             
             if(name != null)
-                playerString += name + playerNameIdSeparator;
+                playerString += name + separator;
             
             playerString += entry.getKey().toString();
             TreeNode playerNode = new TreeNode(playerString);
@@ -152,7 +152,7 @@ public class ClaimPlayers
     protected static UUID getUUIDFromNameString(String nameString) throws IllegalArgumentException
     {
         String uuidString = nameString;
-        String[] parts = uuidString.split("\\Q" + playerNameIdSeparator + "\\E");
+        String[] parts = uuidString.split("\\Q" + separator + "\\E");
         
         if(parts.length > 1)
             uuidString = parts[parts.length - 1];

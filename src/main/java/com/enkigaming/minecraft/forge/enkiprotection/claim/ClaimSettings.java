@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.claim;
 
+import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
 import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.Utils;
 import java.util.Arrays;
@@ -9,13 +10,13 @@ public class ClaimSettings
     public ClaimSettings()
     {}
     
-    public ClaimSettings(TreeNode node)
+    public ClaimSettings(TreeNode node) throws UnableToParseTreeNodeException
     {
         this();
         
         for(TreeNode subnode : node.getChildren())
         {
-            if(     subnode.getName().toUpperCase().startsWith(welcomeMessageTag                  .toUpperCase())) // <editor-fold desc="{ }">
+            if(     subnode.getName().toUpperCase().startsWith(welcomeMessageTag                  .toUpperCase())) // <editor-fold desc="{...}">
             {
                 String[] welcomeMessageParts = subnode.getName().split("\\Q" + separator + "\\E");
                 
@@ -27,7 +28,7 @@ public class ClaimSettings
                 
                 welcomeMessage = welcomeMessageParts[welcomeMessageParts.length - 1];
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowExplosionsTag                 .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowExplosionsTag                 .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowExplosions = getBooleanFromNodeName(subnode.getName());
                 
@@ -39,7 +40,7 @@ public class ClaimSettings
                 
                 this.allowExplosions = allowExplosions;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowFriendlyCombatTag             .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowFriendlyCombatTag             .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowFriendlyCombat = getBooleanFromNodeName(subnode.getName());
                 
@@ -51,7 +52,7 @@ public class ClaimSettings
                 
                 this.allowFriendlyCombat = allowFriendlyCombat;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowPlayerCombatTag               .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowPlayerCombatTag               .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowPlayerCombat = getBooleanFromNodeName(subnode.getName());
                 
@@ -63,7 +64,7 @@ public class ClaimSettings
                 
                 this.allowExplosions = allowPlayerCombat;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowMobEntryTag                   .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowMobEntryTag                   .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowMobEntry = getBooleanFromNodeName(subnode.getName());
                 
@@ -75,7 +76,7 @@ public class ClaimSettings
                 
                 this.allowMobEntry = allowMobEntry;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyEntryTag               .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyEntryTag               .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowNonAllyEntry = getBooleanFromNodeName(subnode.getName());
                 
@@ -87,7 +88,7 @@ public class ClaimSettings
                 
                 this.allowNonAllyEntry = allowNonAllyEntry;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyInteractWithBlocksTag  .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyInteractWithBlocksTag  .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowNonAllyInteractWithBlocks = getBooleanFromNodeName(subnode.getName());
                 
@@ -99,7 +100,7 @@ public class ClaimSettings
                 
                 this.allowNonAllyInteractWithBlocks = allowNonAllyInteractWithBlocks;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyInteractWithEntitiesTag.toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyInteractWithEntitiesTag.toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowNonAllyInteractWithEntities = getBooleanFromNodeName(subnode.getName());
                 
@@ -111,7 +112,7 @@ public class ClaimSettings
                 
                 this.allowNonAllyInteractWithEntities = allowNonAllyInteractWithEntities;
             } // </editor-fold>
-            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyBreakOrPlaceBlocksTag  .toUpperCase())) // <editor-fold desc="{ }">
+            else if(subnode.getName().toUpperCase().startsWith(allowNonAllyBreakOrPlaceBlocksTag  .toUpperCase())) // <editor-fold desc="{...}">
             {
                 Boolean allowNonAllyBreakOrPlaceBlocks = getBooleanFromNodeName(subnode.getName());
                 
@@ -178,7 +179,7 @@ public class ClaimSettings
         // This seems like the cleanest-looking toTreeNode method I've written xD
     }
     
-    public static ClaimSettings fromTreeNode(TreeNode node)
+    public static ClaimSettings fromTreeNode(TreeNode node) throws UnableToParseTreeNodeException
     { return new ClaimSettings(node); }
     
     static Boolean getBooleanFromNodeName(String nodeName)
