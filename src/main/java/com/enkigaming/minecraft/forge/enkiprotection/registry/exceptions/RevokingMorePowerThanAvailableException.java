@@ -1,7 +1,5 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
-
 public class RevokingMorePowerThanAvailableException extends Exception
 {
     public RevokingMorePowerThanAvailableException(int availablePower, int powerAttemptingToRevoke)

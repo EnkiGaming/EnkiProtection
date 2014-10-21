@@ -1,7 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions;
 
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
-import com.enkigaming.minecraft.forge.enkiprotection.registry.deprecated.Claim;
 
 public class NotEnoughClaimPowerToClaimException extends Exception
 {
