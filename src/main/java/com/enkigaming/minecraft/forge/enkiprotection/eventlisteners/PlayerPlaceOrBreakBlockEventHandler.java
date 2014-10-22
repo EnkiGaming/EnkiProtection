@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
+package com.enkigaming.minecraft.forge.enkiprotection.eventlisteners;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.world.BlockEvent;
 
-public class PlayerPlaceOrBreakBlockHandler
+public class PlayerPlaceOrBreakBlockEventHandler
 {
     @SubscribeEvent
     public void onPlayerBreakBlock(BlockEvent.BreakEvent event)

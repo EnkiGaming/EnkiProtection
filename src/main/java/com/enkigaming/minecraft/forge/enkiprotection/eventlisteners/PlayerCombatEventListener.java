@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
+package com.enkigaming.minecraft.forge.enkiprotection.eventlisteners;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
@@ -6,7 +6,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
-public class PlayerCombatListener
+public class PlayerCombatEventListener
 {
     @SubscribeEvent
     public void onPlayerCombat(LivingAttackEvent event)

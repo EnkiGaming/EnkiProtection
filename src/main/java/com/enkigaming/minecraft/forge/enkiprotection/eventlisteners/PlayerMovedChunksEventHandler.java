@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
+package com.enkigaming.minecraft.forge.enkiprotection.eventlisteners;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.EntityEvent;
 
-public class PlayerMovedChunksHandler
+public class PlayerMovedChunksEventHandler
 {
     public void onPlayerMovedChunks(EntityEvent.EnteringChunk event)
     {

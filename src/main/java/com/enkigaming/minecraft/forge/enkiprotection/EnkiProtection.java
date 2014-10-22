@@ -1,5 +1,6 @@
 package com.enkigaming.minecraft.forge.enkiprotection;
 
+import com.enkigaming.mcforge.enkilib.filehandling.FileHandlerRegistry;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.PlayerPowerRegistry;
 import cpw.mods.fml.common.Mod;
@@ -79,4 +80,7 @@ public class EnkiProtection
     
     public Settings getSettings()
     { return settings; }
+    
+    public FileHandlerRegistry getFileHandling()
+    {  }
 }

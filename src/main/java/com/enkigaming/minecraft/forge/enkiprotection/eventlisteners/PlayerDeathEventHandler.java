@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
+package com.enkigaming.minecraft.forge.enkiprotection.eventlisteners;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
@@ -11,7 +11,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-public class PlayerDeathHandler
+public class PlayerDeathEventHandler
 {
     // If a player is banned from a claim that contains the chunk in which their bed is located, they will instead
     // spawn at the server spawn.

@@ -1,4 +1,4 @@
-package com.enkigaming.minecraft.forge.enkiprotection.eventhandlers;
+package com.enkigaming.minecraft.forge.enkiprotection.eventlisteners;
 
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Strings;
@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-public class PlayerInteractHandler
+public class PlayerInteractEventHandler
 {
     @SubscribeEvent
     public void onPlayerInteractBlock(PlayerInteractEvent event)
