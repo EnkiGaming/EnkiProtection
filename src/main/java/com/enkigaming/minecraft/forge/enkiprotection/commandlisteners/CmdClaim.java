@@ -43,8 +43,12 @@ public class CmdClaim extends CommandBase
                     "Ally, Ban"),
         
         claimPlayerInvite("Invites another player to join the claim as a member.",
-                          "Claim invite <Claim name> <Player name>",
+                          "Claim player invite <Claim name> <Player name>",
                           null),
+        
+        claimPlayerCancelinvitation("Cancels any outstanding invitations for a player to join a claim as a member.",
+                                    "Claim player cancelinvitation <Claim name> <Player name>",
+                                    null),
         
         claimPlayerAlly("Sets a player as an ally of the claim.",
                         "Claim player ally <Claim name> <Player name>",
@@ -262,6 +266,9 @@ public class CmdClaim extends CommandBase
     {}
     
     protected void handleClaimPlayerInvite(ICommandSender sender, List<String> args)
+    {}
+    
+    protected void handleClaimPlayerCancelinvitation(ICommandSender sender, List<String> args)
     {}
     
     protected void handleClaimPlayerAlly(ICommandSender sender, List<String> args)
