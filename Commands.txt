@@ -1,0 +1,79 @@
+Commands
+
+Power Give   <Playername> <Amount> - Transfers an amount of power from you to another player.
+Power Give   <Playername> ---------- Transfers all power from you to another player.
+Power Grant  <Claimname> <Amount> -- Grants an amount of power to a claim.
+Power Grant  <Claimname> ----------- Grants all available power to a claim.
+Power Revoke <Claimname> <Amount> -- Revokes an amount of power from a claim.
+Power Revoke <Claimname> ----------- Revokes all available granted power from a claim.
+
+Power Add    <Amount> -------------- Adds an amount of claim power to yourself.
+Power Remove <Amount> -------------- Removes an amount of claim power from yourself.
+Power Set    <Amount> -------------- Sets the amount of claim power you have.
+
+Power Help
+Power Help Give
+Power Help Grant
+Power Help Revoke
+Power Help Add
+Power Help Remove
+Power Help Set
+
+Claim Create <Claimname> - Creates a claim.
+Claim Delete <Claimname> - Deletes a claim.
+Claim Leave  <Claimname> - Removes yourself as a member of a claim.
+Claim Invite <Claimname> - Invites player
+Claim Accept <Claimname> - Accepts an invitation to join a claim.
+Claim Join   <Claimname> - Accepts an invitation to join a claim or sends a request to join.
+
+Claim Player Ally <Claimname> <Playername> - Sets the player as an ally of the claim.
+Claim Player Ban  <Claimname> <Playername> - Bans the player from the claim.
+
+Claim Chunk Add    <Claimname> - Adds the chunk the player is in as a claim.
+Claim Chunk Remove <Claimname> - Removes the chunk the player is in as a claim.
+
+Claim Setting AllowExplosions                <Claimname> <true/false> - Sets whether explosions affect anything in the claim.
+Claim Setting AllowFriendlyCombat            <Claimname> <true/false> - Sets whether claim owners/members/allies can fight eachother.
+Claim Setting AllowPlayerCombat              <Claimname> <true/false> - Sets whether players can fight eachother.
+Claim Setting AllowMobEntry                  <Claimname> <true/false> - Sets whether mobs can enter/spawn in the claim.
+Claim Setting AllowNonAllyEntry              <Claimname> <true/false> - Sets whether non-allies can enter the claim.
+Claim Setting AllowEntry                     <Claimname> <true/false> - Same as AllowNonAllyEntry.
+Claim Setting AllowNonAllyInteractWithBlocks <Claimname> <true/false> - Sets whether non-allies can interact with/right-click on blocks.
+Claim Setting AllowBlockInteraction          <Claimname> <true/false> - Same as AllowNonAllyInteractWithBlocks.
+Claim Setting AllowNonAllyInteractWithBlocks <Claimname> <true/false> - Sets whether non-allies can interact with/right-click on/left-click on non-living entities.
+Claim Setting AllowEntityInteraction         <Claimname> <true/false> - Same as AllowNonAllyInteractWithEntities.
+Claim Setting AllowInteraction               <Claimname> <true/false> - Sets interaction settings for both blocks and entities.
+Claim Setting AllowNonAllyPlaceOrBreak       <Claimname> <true/false> - Sets whether non-allies can place or break blocks.
+Claim Setting AllowNonAllyBuild              <Claimname> <true/false> - Same as AllowNonAllyPlaceOrBreak.
+Claim Setting AllowPlaceOrBreak              <Claimname> <true/false> - Same as AllowNonAllyPlaceOrBreak.
+Claim Setting AllowBuild                     <Claimname> <true/false> - Same as AllowNonAllyPlaceOrBreak.
+
+Claim Help
+Claim Help Create
+Claim Help Delete
+Claim Help Leave
+Claim Help Invite
+Claim Help Accept
+Claim Help Join
+Claim Help Player
+Claim Help Player Ally
+Claim Help Player Ban
+Claim Help Chunk
+Claim Help Chunk Add
+Claim Help Chunk Remove
+Claim Help Setting
+Claim Help Setting AllowExplosions
+Claim Help Setting AllowFriendlyCombat
+Claim Help Setting AllowPlayerCombat
+Claim Help Setting AllowMobEntry
+Claim Help Setting AllowNonAllyEntry
+Claim Help Setting AllowEntry
+Claim Help Setting AllowNonAllyInteractWithBlocks
+Claim Help Setting AllowBlockInteraction
+Claim Help Setting AllowNonAllyInteractWithBlocks
+Claim Help Setting AllowEntityInteraction
+Claim Help Setting AllowInteraction
+Claim Help Setting AllowNonAllyPlaceOrBreak
+Claim Help Setting AllowNonAllyBuild
+Claim Help Setting AllowPlaceOrBreak
+Claim Help Setting AllowBuild
