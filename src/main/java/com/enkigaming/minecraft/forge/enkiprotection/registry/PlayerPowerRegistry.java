@@ -150,7 +150,7 @@ public class PlayerPowerRegistry
         {
             Map<UUID, Map<Claim, Integer>> grants = new HashMap<UUID, Map<Claim, Integer>>();
             
-            for(Claim claim : EnkiProtection.getInstance().getRegistry().getClaims())
+            for(Claim claim : EnkiProtection.getInstance().getClaims().getClaims())
             {
                 for(Entry<UUID, Integer> grant : claim.getPowerManager().getPowerGrantsIncludingQueuedRevocations().entrySet())
                 {

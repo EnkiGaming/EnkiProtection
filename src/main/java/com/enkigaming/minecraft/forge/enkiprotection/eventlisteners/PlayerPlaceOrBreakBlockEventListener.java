@@ -11,17 +11,17 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.world.BlockEvent;
 
-public class PlayerPlaceOrBreakBlockEventHandler
+public class PlayerPlaceOrBreakBlockEventListener
 {
     @SubscribeEvent
     public void onPlayerBreakBlock(BlockEvent.BreakEvent event)
     {
         // I think at this point, I've just gotten into the habit of
         // null-checking everything I use that comes from forge events.
-        if(event.block == null  || event.getPlayer() == null)
+        if(event.block == null || event.getPlayer() == null)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(event.x, event.z, event.world);
         
         if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.getPlayer()))
         {
@@ -36,7 +36,7 @@ public class PlayerPlaceOrBreakBlockEventHandler
         if(event.placedBlock == null || event.player == null)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(event.x, event.z, event.world);
         
         if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.player))
         {
@@ -57,7 +57,7 @@ public class PlayerPlaceOrBreakBlockEventHandler
         
         for(Chunk chunk : chunks)
         {
-            Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtChunk(chunk);
+            Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtChunk(chunk);
             
             if(claim != null && !claim.canBreakOrPlaceBlocksIn(event.player))
             {

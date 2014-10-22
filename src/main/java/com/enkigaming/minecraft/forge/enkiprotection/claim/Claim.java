@@ -163,7 +163,7 @@ public class Claim
         {
             @Override
             public void onQueuedRevocationExpiration(UUID playerId, int amount)
-            { EnkiProtection.getInstance().getPowerRegistry().getForPlayer(playerId).notifyOfPowerGrantReturn(Claim.this, amount); }
+            { EnkiProtection.getInstance().getClaimPowers().getForPlayer(playerId).notifyOfPowerGrantReturn(Claim.this, amount); }
         });
         
         claimPower.setPowerUsedGetter(new ClaimPower.PowerUsedGetter()

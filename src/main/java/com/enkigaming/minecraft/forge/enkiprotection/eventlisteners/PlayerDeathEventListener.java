@@ -11,7 +11,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-public class PlayerDeathEventHandler
+public class PlayerDeathEventListener
 {
     // If a player is banned from a claim that contains the chunk in which their bed is located, they will instead
     // spawn at the server spawn.
@@ -32,7 +32,7 @@ public class PlayerDeathEventHandler
         
         int playerRespawnDimensionID = Utils.getSpawnDimensionID(event.player);
         ChunkCoordinates bedLocation = event.player.getBedLocation(playerRespawnDimensionID);
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(bedLocation.posX, bedLocation.posZ, DimensionManager.getWorld(playerRespawnDimensionID));
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(bedLocation.posX, bedLocation.posZ, DimensionManager.getWorld(playerRespawnDimensionID));
         
         if(claim != null && !claim.canEnter(event.player))
         {

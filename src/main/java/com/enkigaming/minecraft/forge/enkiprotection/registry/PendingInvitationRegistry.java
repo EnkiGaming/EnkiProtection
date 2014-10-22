@@ -183,7 +183,7 @@ public class PendingInvitationRegistry
             protected List<CSVRowMember> getRow(int i)
             {
                 String playerName = EnkiLib.getLastRecordedNameOf(invitationList.get(i).getPlayerId());
-                Claim claim = EnkiProtection.getInstance().getRegistry().getClaim(invitationList.get(i).getClaimId());
+                Claim claim = EnkiProtection.getInstance().getClaims().getClaim(invitationList.get(i).getClaimId());
                 
                 CSVRowMember playerNameField;
                 

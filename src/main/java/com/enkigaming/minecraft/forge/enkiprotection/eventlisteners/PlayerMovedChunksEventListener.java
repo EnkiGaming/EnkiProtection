@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.EntityEvent;
 
-public class PlayerMovedChunksEventHandler
+public class PlayerMovedChunksEventListener
 {
     public void onPlayerMovedChunks(EntityEvent.EnteringChunk event)
     {
@@ -27,7 +27,7 @@ public class PlayerMovedChunksEventHandler
         if(Utils.playerIsCurrentlyRespawning(player.getGameProfile().getId()))
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtChunk(event.newChunkX, event.newChunkZ, player.worldObj);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtChunk(event.newChunkX, event.newChunkZ, player.worldObj);
         
         if(claim != null && !claim.canEnter(player))
         {

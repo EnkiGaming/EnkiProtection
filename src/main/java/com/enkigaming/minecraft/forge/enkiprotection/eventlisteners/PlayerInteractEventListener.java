@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-public class PlayerInteractEventHandler
+public class PlayerInteractEventListener
 {
     @SubscribeEvent
     public void onPlayerInteractBlock(PlayerInteractEvent event)
@@ -19,7 +19,7 @@ public class PlayerInteractEventHandler
         if(event.entityPlayer == null)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock(event.x, event.z, event.world);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(event.x, event.z, event.world);
         
         if(claim != null && !claim.canInteractWithBlocksIn(event.entityPlayer))
         {
@@ -34,7 +34,7 @@ public class PlayerInteractEventHandler
         if(event.entityPlayer == null || event.target == null || event.target instanceof EntityLivingBase)
             return;
 
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock((int)(event.target.posX + 0.5), (int)(event.target.posZ), event.target.worldObj);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock((int)(event.target.posX + 0.5), (int)(event.target.posZ), event.target.worldObj);
 
         if(claim != null && !claim.canInteractWithEntitiesIn(event.entityPlayer))
         {
@@ -49,7 +49,7 @@ public class PlayerInteractEventHandler
         if(event.entityLiving == null || !(event.entityLiving instanceof EntityPlayer) || event.entity == null || event.entity instanceof EntityLivingBase)
             return;
         
-        Claim claim = EnkiProtection.getInstance().getRegistry().getClaimAtBlock((int)(event.entity.posX + 0.5), (int)(event.entity.posZ + 0.5), event.entity.worldObj);
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock((int)(event.entity.posX + 0.5), (int)(event.entity.posZ + 0.5), event.entity.worldObj);
         EntityPlayer player = (EntityPlayer)event.entityLiving;
         
         if(claim != null && !claim.canInteractWithEntitiesIn(player))
