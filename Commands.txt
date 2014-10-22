@@ -6,6 +6,7 @@ Power Grant  <Claimname> <Amount> -- Grants an amount of power to a claim.
 Power Grant  <Claimname> ----------- Grants all available power to a claim.
 Power Revoke <Claimname> <Amount> -- Revokes an amount of power from a claim.
 Power Revoke <Claimname> ----------- Revokes all available granted power from a claim.
+Power 
 
 Power Add    <Amount> -------------- Adds an amount of claim power to yourself.
 Power Remove <Amount> -------------- Removes an amount of claim power from yourself.
@@ -19,18 +20,21 @@ Power Help Add
 Power Help Remove
 Power Help Set
 
-Claim Create <Claimname> - Creates a claim.
-Claim Delete <Claimname> - Deletes a claim.
-Claim Leave  <Claimname> - Removes yourself as a member of a claim.
-Claim Invite <Claimname> - Invites player
-Claim Accept <Claimname> - Accepts an invitation to join a claim.
-Claim Join   <Claimname> - Accepts an invitation to join a claim or sends a request to join.
+Claim Create <Claimname> -------------- Creates a claim.
+Claim Delete <Claimname> -------------- Deletes a claim.
+Claim Leave  <Claimname> -------------- Removes yourself as a member of a claim.
+Claim Accept <Claimname> -------------- Accepts an invitation to join a claim.
+Claim Join   <Claimname> -------------- Accepts an invitation to join a claim or sends a request to join.
 
-Claim Player Ally <Claimname> <Playername> - Sets the player as an ally of the claim.
-Claim Player Ban  <Claimname> <Playername> - Bans the player from the claim.
+Claim Player Invite <ClaimName> <Playername> - Invites player to join as a member.
+Claim Player Ally   <Claimname> <Playername> - Sets the player as an ally of the claim.
+Claim Player Ban    <Claimname> <Playername> - Bans the player from the claim.
 
-Claim Chunk Add    <Claimname> - Adds the chunk the player is in as a claim.
-Claim Chunk Remove <Claimname> - Removes the chunk the player is in as a claim.
+Claim Chunk Add        <Claimname> - Adds the chunk the player is in as a claim.
+Claim Chunk Remove     <Claimname> - Removes the chunk the player is in as a claim.
+Claim Chunk Remove ----------------- Removes the chunk from whichever claim it’s in.
+Claim Chunk Autoadd    <Claimname> - Makes the player automatically add chunks to the claim by going through them.
+Claim Chunk Autoremove <Claimname> - Makes the player automatically remove chunks from the claim by going through them.
 
 Claim Setting AllowExplosions                <Claimname> <true/false> - Sets whether explosions affect anything in the claim.
 Claim Setting AllowFriendlyCombat            <Claimname> <true/false> - Sets whether claim owners/members/allies can fight eachother.
@@ -52,10 +56,10 @@ Claim Help
 Claim Help Create
 Claim Help Delete
 Claim Help Leave
-Claim Help Invite
 Claim Help Accept
 Claim Help Join
 Claim Help Player
+Claim Help Player Invite
 Claim Help Player Ally
 Claim Help Player Ban
 Claim Help Chunk
@@ -70,10 +74,12 @@ Claim Help Setting AllowNonAllyEntry
 Claim Help Setting AllowEntry
 Claim Help Setting AllowNonAllyInteractWithBlocks
 Claim Help Setting AllowBlockInteraction
-Claim Help Setting AllowNonAllyInteractWithBlocks
+Claim Help Setting AllowNonAllyInteractWithEntities
 Claim Help Setting AllowEntityInteraction
 Claim Help Setting AllowInteraction
 Claim Help Setting AllowNonAllyPlaceOrBreak
 Claim Help Setting AllowNonAllyBuild
 Claim Help Setting AllowPlaceOrBreak
 Claim Help Setting AllowBuild
+
+EnkiProtection ReloadFiles - Erases current data and loads from files.
