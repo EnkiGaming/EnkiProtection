@@ -1,9 +1,15 @@
 package com.enkigaming.minecraft.forge.enkiprotection.commandlisteners;
 
+import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.ClaimPlayers;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +22,7 @@ public class CmdClaim extends CommandBase
     {
         claim("Base command for claim-related commands.",
               "Claim <Subcommand> <Subcommand-specific arguments>",
-              "Create, Delete, Leave, Invite, Accept, Join, Player, Chunk, Setting"),
+              "Create, Delete, Leave, Accept, Join, Rename, Player, Chunk, Setting"),
         
         claimCreate("Creates a new claim.",
                     "Claim create <Claim name>",
@@ -37,6 +43,10 @@ public class CmdClaim extends CommandBase
         claimJoin("Joins a claim as a member, or sends a request to.",
                   "Claim join <Claim name>",
                   null),
+        
+        claimRename("Renames a claim.",
+                    "Claim rename <Claim name> <New claim name>",
+                    null),
         
         claimPlayer("Base command for player-related claim commands.",
                     "Claim player <Subcommand> <Claim name> <Player name>",
@@ -72,12 +82,16 @@ public class CmdClaim extends CommandBase
         
         claimSetting("Base command for claim settings.",
                      "Claim setting <setting> <value(s)>",
-                     "AllowExplosions, AllowFriendlyCombat, AllowPlayerCombat, AllowMobEntry, AllowNonAllyEntry, "
-                     + "AllowEntry, AllowNonAllyInteractWithBlocks, AllowBlockInteraction, "
+                     "WelcomeMessage, AllowExplosions, AllowFriendlyCombat, AllowPlayerCombat, AllowMobEntry, "
+                     + "AllowNonAllyEntry, AllowEntry, AllowNonAllyInteractWithBlocks, AllowBlockInteraction, "
                      + "AllowNonAllyInteractWithEntities, AllowEntityInteraction, AllowInteraction, "
                      + "AllowNonAllyPlaceOrBreak, AllowNonAllyBuild, AllowPlaceOrBreak, AllowBuild"),
         
-        claimSettingAllowExplosions("Sets whether explosions affect blocks or entities in the claim.",
+        claimSettingWelcomemessage("Sets the message that appears when a player enters the claim.",
+                                   "Claim setting welcomemessage <New message>",
+                                   null),
+        
+        claimSettingAllowexplosions("Sets whether explosions affect blocks or entities in the claim.",
                                     "Claim setting allowexplosions <Claim name> <true/false>",
                                     null),
         
@@ -167,7 +181,7 @@ public class CmdClaim extends CommandBase
 
     @Override
     public String getCommandUsage(ICommandSender sender)
-    { return "Subcommands: create, delete, leave, invite, accept, join, player, chunk, setting. Type /claim help <subcommand> for help with it."; }
+    { return "Subcommands: create, delete, leave, accept, join, rename, player, chunk, setting. Type /claim help <subcommand> for help with it."; }
     
     @Override
     public List getCommandAliases()
@@ -237,6 +251,10 @@ public class CmdClaim extends CommandBase
             handleClaimLeave(sender, args.subList(1, args.size()));
         else if(args.get(0).equalsIgnoreCase("accept"))
             handleClaimAccept(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("join"))
+            handleClaimJoin(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("rename"))
+            handleClaimRename(sender, args.subList(1, args.size()));
         else if(args.get(0).equalsIgnoreCase("player"))
             handleClaimPlayer(sender, args.subList(1, args.size()));
         else if(args.get(0).equalsIgnoreCase("chunk"))
@@ -248,10 +266,56 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimCreate(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return;
+        }
+        
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimCreate);
+            return;
+        }
+        
+        if(!checkPermission(sender, "enkiprotection.claim.create"))
+            return;
+        
+        Claim claim;
+        
+        try
+        { claim = EnkiProtection.getInstance().getClaims().createClaim(args.get(0)); }
+        catch(ClaimNameAlreadyPresentException ex)
+        {
+            sender.addChatMessage(new ChatComponentText("A claim with the name " + args.get(0) + " already exists."));
+            sendSenderUsage(sender, HelpOption.claimCreate);
+            return;
+        }
+        
+        claim.getPlayerManager().setOwner((EntityPlayer)sender);
+        sender.addChatMessage(new ChatComponentText("Claim created! - " + claim.getName()));
+    }
     
     protected void handleClaimDelete(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimCreate);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimDelete);
+            return;
+        }
+        
+        /* To be continued. */
+    }
     
     protected void handleClaimLeave(ICommandSender sender, List<String> args)
     {}
@@ -260,6 +324,12 @@ public class CmdClaim extends CommandBase
     {}
     
     protected void handleClaimAccept(ICommandSender sender, List<String> args)
+    {}
+    
+    protected void handleClaimJoin(ICommandSender sender, List<String> args)
+    {}
+    
+    protected void handleClaimRename(ICommandSender sender, List<String> args)
     {}
     
     protected void handleClaimPlayer(ICommandSender sender, List<String> args)

@@ -20,11 +20,12 @@ Power Help Add
 Power Help Remove
 Power Help Set
 
-Claim Create <Claimname> -------------- Creates a claim.
-Claim Delete <Claimname> -------------- Deletes a claim.
-Claim Leave  <Claimname> -------------- Removes yourself as a member of a claim.
-Claim Accept <Claimname> -------------- Accepts an invitation to join a claim.
-Claim Join   <Claimname> -------------- Accepts an invitation to join a claim or sends a request to join.
+Claim Create <Claimname> ------------ Creates a claim.
+Claim Delete <Claimname> ------------ Deletes a claim.
+Claim Leave  <Claimname> ------------ Removes yourself as a member of a claim.
+Claim Accept <Claimname> ------------ Accepts an invitation to join a claim.
+Claim Join   <Claimname> ------------ Accepts an invitation to join a claim or sends a request to join.
+Claim Rename <Claimname> <New name> - Changes the name of the claim.
 
 Claim Player Invite           <Claimname> <Playername> - Invites player to join as a member.
 Claim Player CancelInvitation <Claimname> <Playername> - Cancels pending invitations to a player for a claim.
@@ -59,6 +60,7 @@ Claim Help Delete
 Claim Help Leave
 Claim Help Accept
 Claim Help Join
+Claim Help Rename
 Claim Help Player
 Claim Help Player Invite
 Claim Help Player Ally

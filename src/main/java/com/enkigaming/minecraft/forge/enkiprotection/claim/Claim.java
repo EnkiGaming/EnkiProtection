@@ -472,4 +472,64 @@ public class Claim
     
     public boolean canBreakOrPlaceBlocksIn(EntityPlayer player)
     { return canBreakOrPlaceBlocksIn(player.getGameProfile().getId()); }
+    
+    public boolean canDelete(UUID playerId)
+    {}
+    
+    public boolean canDelete(EntityPlayer player)
+    {}
+    
+    public boolean canJoin(UUID playerId)
+    {}
+    
+    public boolean canRename(UUID playerId)
+    {}
+    
+    public boolean canInvite(UUID playerId)
+    {}
+    
+    public boolean canSetAllies(UUID playerId)
+    {}
+    
+    public boolean canSetBanned(UUID playerId)
+    {}
+    
+    public boolean canAddChunks(UUID playerId)
+    {}
+    
+    public boolean canRemoveChunks(UUID playerId)
+    {}
+    
+    public boolean canAutoAddChunks(UUID playerId)
+    {}
+    
+    public boolean canAutoRemoveChunks(UUID playerId)
+    {}
+    
+    public boolean canSetWelcomeMessage(UUID playerId)
+    {}
+    
+    public boolean canSetAllowExplosions(UUID playerId)
+    {}
+    
+    public boolean canSetAllowFriendlyCombat(UUID playerId)
+    {}
+    
+    public boolean canSetAllowPlayerCombat(UUID playerId)
+    {}
+    
+    public boolean canSetAllowMobEntry(UUID playerId)
+    {}
+    
+    public boolean canSetAllowNonAllyEntry(UUID playerId)
+    {}
+    
+    public boolean canSetAllowNonAllyBlockInteraction(UUID playerId)
+    {}
+    
+    public boolean canSetAllowNonAllyEntityInteraction(UUID playerId)
+    {}
+    
+    public boolean canSetAllowNonAllyBuild(UUID playerId)
+    {}
 }
