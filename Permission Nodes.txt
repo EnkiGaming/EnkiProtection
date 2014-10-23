@@ -12,6 +12,15 @@ EnkiProtection.Claim.Any    .Delete --------------------------- allows player to
 EnkiProtection.Claim.Own    .Invite --------------------------- allows player to invite players to any claim they own.
 EnkiProtection.Claim.Member .Invite --------------------------- allows player to invite players to any claim which they’re a member of.
 EnkiProtection.Claim.Any    .Invite --------------------------- allows player to invite players to any claim at all. I see baph using this :P
+EnkiProtection.Claim.Own    .Rename --------------------------- allows player to rename claims they own.
+EnkiProtection.Claim.Member .Rename --------------------------- allows player to rename claims they’re a member of.
+EnkiProtection.Claim.Any    .Rename --------------------------- allows player to rename any claims.
+EnkiProtection.Claim.Own    .SetAllies
+EnkiProtection.Claim.Member .SetAllies
+EnkiProtection.Claim.Any    .SetAllies
+EnkiProtection.Claim.Own    .SetBanned
+EnkiProtection.Claim.Member .SetBanned
+EnkiProtection.Claim.Any    .SetBanned
 EnkiProtection.Claim.Join ------------------------------------- allows player to join a claim as a member.
 EnkiProtection.Claim.Ally ------------------------------------- allows player to be an ally of a claim.
 EnkiProtection.Claim.ImmuneToBan ------------------------------ allows player to not be affected by bans from claims.
@@ -20,7 +29,7 @@ EnkiProtection.Claim.Member .GrantOwnership ------------------- allows player to
 EnkiProtection.Claim.Any    .GrantOwnership ------------------- allows player to grant other players ownership over any claims.
 EnkiProtection.Claim.Chunk  .Own           .Add --------------- allows player to add chunks to their own claims.
 EnkiProtection.Claim.Chunk  .Member        .Add --------------- allows player to add chunks to claims they’re a member of.
-EnkiProtection.Claim.Chunk  .Ally          .Add --------------- allows player to add chunks to any claims.
+EnkiProtection.Claim.Chunk  .Any           .Add --------------- allows player to add chunks to any claims.
 EnkiProtection.Claim.Chunk  .NonConsecutiveAdd ---------------- allows player to add non-consecutive chunks to a claim.
 EnkiProtection.Claim.Chunk  .AutoAdd -------------------------- allows player to claim chunks by running through them.
 EnkiProtection.Claim.Chunk  .Own           .Remove ------------ allows player to remove chunks from their own claims.

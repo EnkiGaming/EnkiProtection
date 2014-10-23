@@ -137,6 +137,9 @@ public class Claim
     protected final static String worldIdTag  = "World ID";
     protected final static String separator   = ": ";
     
+    protected final static String replaceTag        = "#OWNMEMBERANY#";
+    protected final static String escapedReplaceTag = "\\Q" + replaceTag + "\\E";
+    
     void registerListenersToClaimPower(ClaimPower claimPower)
     {
         claimPower.addListener(new ClaimPower.ForceRevokeListener()
@@ -473,63 +476,162 @@ public class Claim
     public boolean canBreakOrPlaceBlocksIn(EntityPlayer player)
     { return canBreakOrPlaceBlocksIn(player.getGameProfile().getId()); }
     
+    /**
+     * Checks whether a player can do something based on an own.x, member.x, any.x permission format.
+     * @param permission The permission to check for, in the format of some.permission.#OWNMEMBERANY#.dothing
+     * @return Whether the player can do it.
+     */
+    protected boolean canDo(UUID playerId, String permission)
+    {
+        if(Permissions.hasPermission(playerId, permission.replaceAll(escapedReplaceTag, "any")))
+            return true;
+        
+        if(Permissions.hasPermission(playerId, permission.replaceAll(escapedReplaceTag, "member")))
+            if(players.isMemberOrBetter(playerId))
+                return true;
+        
+        if(Permissions.hasPermission(playerId, permission.replaceAll(escapedReplaceTag, "own")))
+            if(players.isOwner(playerId))
+                return true;
+        
+        return false;
+    }
+    
     public boolean canDelete(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim." + replaceTag + ".delete"); }
     
     public boolean canDelete(EntityPlayer player)
-    {}
+    { return canDelete(player.getGameProfile().getId()); }
     
     public boolean canJoin(UUID playerId)
-    {}
+    { return Permissions.hasPermission(playerId, "enkiprotection.claim.join"); }
+    
+    public boolean canJoin(EntityPlayer player)
+    { return canJoin(player.getGameProfile().getId()); }
     
     public boolean canRename(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim." + replaceTag + ".rename"); }
+    
+    public boolean canRename(EntityPlayer player)
+    { return canRename(player.getGameProfile().getId()); }
     
     public boolean canInvite(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim." + replaceTag + ".invite"); }
+    
+    public boolean canInvite(EntityPlayer player)
+    { return canInvite(player.getGameProfile().getId()); }
     
     public boolean canSetAllies(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim." + replaceTag + ".setallies"); }
+    
+    public boolean canSetAllies(EntityPlayer player)
+    { return canSetAllies(player.getGameProfile().getId()); }
     
     public boolean canSetBanned(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim." + replaceTag + ".setbanned"); }
+    
+    public boolean canSetBanned(EntityPlayer player)
+    { return canSetBanned(player.getGameProfile().getId()); }
     
     public boolean canAddChunks(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".add"); }
+    
+    public boolean canAddChunks(EntityPlayer player)
+    { return canAddChunks(player.getGameProfile().getId()); }
     
     public boolean canRemoveChunks(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".remove"); }
+    
+    public boolean canRemoveChunks(EntityPlayer player)
+    { return canRemoveChunks(player.getGameProfile().getId()); }
     
     public boolean canAutoAddChunks(UUID playerId)
-    {}
+    {
+        return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".add")
+            && Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.autoadd");
+    }
+    
+    public boolean canAutoAddChunks(EntityPlayer player)
+    { return canAutoAddChunks(player.getGameProfile().getId()); }
+    
+    public boolean canAddChunksNonConsecutively(UUID playerId)
+    {
+        return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".add")
+            && Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.nonconsecutiveadd");
+    }
+    
+    public boolean canAddChunksNonConsecutively(EntityPlayer player)
+    { return canAddChunksNonConsecutively(player.getGameProfile().getId()); }
     
     public boolean canAutoRemoveChunks(UUID playerId)
-    {}
+    {
+        return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".remove")
+            && Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.autoremove");
+    }
+    
+    public boolean canAutoRemoveChunks(EntityPlayer player)
+    { return canAutoRemoveChunks(player.getGameProfile().getId()); }
+    
+    public boolean canRemoveChunksNonConsecutively(UUID playerId)
+    {
+        return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".remove")
+            && Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.nonconsecutiveadd");
+    }
+    
+    public boolean canRemoveChunksNonConsecutively(EntityPlayer player)
+    { return canRemoveChunksNonConsecutively(player.getGameProfile().getId()); }
     
     public boolean canSetWelcomeMessage(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".welcomemessage"); }
+    
+    public boolean canSetWelcomeMessage(EntityPlayer player)
+    { return canSetWelcomeMessage(player.getGameProfile().getId()); }
     
     public boolean canSetAllowExplosions(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowexplosions"); }
+    
+    public boolean canSetAllowExplosions(EntityPlayer player)
+    { return canSetAllowExplosions(player.getGameProfile().getId()); }
     
     public boolean canSetAllowFriendlyCombat(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowfriendlycombat"); }
+    
+    public boolean canSetAllowFriendlyCombat(EntityPlayer player)
+    { return canSetAllowFriendlyCombat(player.getGameProfile().getId()); }
     
     public boolean canSetAllowPlayerCombat(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowplayercombat"); }
+    
+    public boolean canSetAllowPlayerCombat(EntityPlayer player)
+    { return canSetAllowPlayerCombat(player.getGameProfile().getId()); }
     
     public boolean canSetAllowMobEntry(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowmobentry"); }
+    
+    public boolean canSetAllowMobEntry(EntityPlayer player)
+    { return canSetAllowMobEntry(player.getGameProfile().getId()); }
     
     public boolean canSetAllowNonAllyEntry(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allownonallyentry"); }
+    
+    public boolean canSetAllowNonAllyEntry(EntityPlayer player)
+    { return canSetAllowNonAllyEntry(player.getGameProfile().getId()); }
     
     public boolean canSetAllowNonAllyBlockInteraction(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowinteractwithblocks"); }
+    
+    public boolean canSetAllowNonAllyBlockInteraction(EntityPlayer player)
+    { return canSetAllowNonAllyBlockInteraction(player.getGameProfile().getId()); }
     
     public boolean canSetAllowNonAllyEntityInteraction(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowinteractwithentities"); }
+    
+    public boolean canSetAllowNonAllyEntityInteraction(EntityPlayer player)
+    { return canSetAllowNonAllyEntityInteraction(player.getGameProfile().getId()); }
     
     public boolean canSetAllowNonAllyBuild(UUID playerId)
-    {}
+    { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".allowbreakorplaceblocks"); }
+    
+    public boolean canSetAllowNonAllyBuild(EntityPlayer player)
+    { return canSetAllowNonAllyBuild(player.getGameProfile().getId()); }
 }
