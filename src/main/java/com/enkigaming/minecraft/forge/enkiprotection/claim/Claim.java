@@ -383,10 +383,13 @@ public class Claim
     
     // ========== Convenience methods ==========
     
-    public boolean removingWouldBeNonConsecutive(ChunkCoOrdinate chunk)
+    public boolean removingWouldBeNonConsecutive(ChunkCoOrdinate chunk) throws ChunkNotPresentException
     {
         synchronized(chunks)
         {
+            if(!chunks.contains(chunk))
+                throw new ChunkNotPresentException(chunk);
+            
             if(chunks.size() == 1)
                 return false;
             
@@ -447,6 +450,9 @@ public class Claim
     
     public boolean addingWouldBeNonConsecutive(ChunkCoOrdinate chunk) throws ChunkAlreadyPresentException
     {
+        if(chunks.contains(chunk))
+            throw new ChunkAlreadyPresentException(chunk);
+        
         synchronized(chunks)
         { return !chunk.isNextTo(chunks); }
     }

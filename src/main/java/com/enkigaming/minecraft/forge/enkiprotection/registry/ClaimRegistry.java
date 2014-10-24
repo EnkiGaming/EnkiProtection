@@ -142,6 +142,12 @@ public class ClaimRegistry
     public Claim getClaimAtBlock(ChunkPosition block, World world)
     { return getClaimAtChunk(new ChunkCoOrdinate(block.chunkPosX * 16, block.chunkPosZ * 16, world.provider.dimensionId)); }
     
+    public Claim getClaimAtBlock(int x, int z, int worldId)
+    { return getClaimAtChunk(new ChunkCoOrdinate(x * 16, z * 16, worldId)); }
+    
+    public Claim getClaimAtBlock(ChunkPosition block, int worldId)
+    { return getClaimAtChunk(new ChunkCoOrdinate(block.chunkPosX * 16, block.chunkPosZ * 16, worldId)); }
+    
     public Claim getClaimAtChunk(int chunkX, int chunkZ, World world)
     { return getClaimAtChunk(new ChunkCoOrdinate(chunkX, chunkZ, world.provider.dimensionId)); }
     

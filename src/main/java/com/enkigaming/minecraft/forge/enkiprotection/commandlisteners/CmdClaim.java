@@ -4,7 +4,9 @@ import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.ClaimPlayers;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +16,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChunkCoordinates;
 import org.apache.commons.lang3.NotImplementedException;
 
 public class CmdClaim extends CommandBase
@@ -301,7 +304,7 @@ public class CmdClaim extends CommandBase
     {
         if(args.size() != 1)
         {
-            sendSenderUsage(sender, HelpOption.claimCreate);
+            sendSenderUsage(sender, HelpOption.claimChunkRemove);
             return;
         }
         
@@ -314,11 +317,13 @@ public class CmdClaim extends CommandBase
             return;
         }
         
-        /* To be continued. */
+        /* To be continued */
     }
     
     protected void handleClaimLeave(ICommandSender sender, List<String> args)
-    {}
+    {
+        
+    }
     
     protected void handleClaimInvite(ICommandSender sender, List<String> args)
     {}
@@ -354,7 +359,55 @@ public class CmdClaim extends CommandBase
     {}
     
     protected void handleClaimChunkRemove(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return;
+        }
+        
+        if(!(args.size() >= 0 && args.size() <= 1))
+        {
+            sendSenderUsage(sender, HelpOption.claimChunkRemove);
+            return;
+        }
+        
+        EntityPlayer player = (EntityPlayer)sender;
+        Claim claim;
+        
+        if(args.isEmpty())
+            claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(player.serverPosX, player.serverPosZ, player.dimension);
+        else
+            claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        ChunkCoordinates playerLocation = player.getPlayerCoordinates();
+        ChunkCoOrdinate playerChunk = new ChunkCoOrdinate(playerLocation.posX / 16, playerLocation.posZ / 16, player.dimension);
+        
+        if(claim == null)
+        {
+            if(args.isEmpty())
+                sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            else
+                sender.addChatMessage(new ChatComponentText("Current chunk is not in a claim."));
+                
+            sendSenderUsage(sender, HelpOption.claimChunkRemove);
+            return;
+        }
+        
+        try
+        {
+            if(!claim.canRemoveChunk(player, playerChunk))
+            {
+                sender.addChatMessage(new ChatComponentText("You don't have permission to do that."));
+                return;
+            }
+        }
+        catch(ChunkNotPresentException ex)
+        { sender.addChatMessage(new ChatComponentText("That chunk is not currently in the claim.")); }
+        
+        claim.unclaimChunk(playerChunk);
+        sender.addChatMessage(new ChatComponentText("Chunk un-claimed!"));
+    }
     
     protected void handleClaimChunkAutoadd(ICommandSender sender, List<String> args)
     {}
