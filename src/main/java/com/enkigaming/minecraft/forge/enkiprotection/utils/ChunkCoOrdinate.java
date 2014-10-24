@@ -1,5 +1,10 @@
 package com.enkigaming.minecraft.forge.enkiprotection.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.ChunkPosition;
@@ -173,6 +178,50 @@ public class ChunkCoOrdinate
      */
     public ChunkPosition toChunkPosition()
     { return new ChunkPosition(xCoOrd, 0, zCoOrd); }
+    
+    public Collection<ChunkCoOrdinate> getAdjacentChunks()
+    {
+        return new ArrayList<ChunkCoOrdinate>(Arrays.asList(
+                new ChunkCoOrdinate(this.getXCoOrd() + 1, this.getZCoOrd(), this.getWorldID()),
+                new ChunkCoOrdinate(this.getXCoOrd() - 1, this.getZCoOrd(), this.getWorldID()),
+                new ChunkCoOrdinate(this.getXCoOrd(), this.getZCoOrd() + 1, this.getWorldID()),
+                new ChunkCoOrdinate(this.getXCoOrd(), this.getZCoOrd() - 1, this.getWorldID())));
+    }
+    
+    public boolean isNextTo(ChunkCoOrdinate chunk)
+    {
+        if(chunk == null || equals(chunk))
+            return false;
+        
+        Collection<ChunkCoOrdinate> possibleChunks = chunk.getAdjacentChunks();
+        
+        for(ChunkCoOrdinate current : possibleChunks)
+            if(chunk.equals(current))
+                return true;
+        
+        return false;
+    }
+    
+    public boolean isNextTo(Collection<ChunkCoOrdinate> chunks)
+    {
+        if(chunks == null)
+            return false;
+        
+        Set<ChunkCoOrdinate> adjacentChunks = new HashSet<ChunkCoOrdinate>();
+        
+        for(ChunkCoOrdinate chunk : chunks)
+            if(chunk != null)
+                adjacentChunks.addAll(getAdjacentChunks());
+        
+        for(ChunkCoOrdinate chunk : adjacentChunks)
+            if(equals(chunk))
+                return true;
+        
+        return false;
+    }
+    
+    public boolean isNextTo(ChunkCoOrdinate... chunks)
+    { return isNextTo(Arrays.asList(chunks)); }
 
     @Override
     public boolean equals(Object obj)

@@ -4,6 +4,8 @@ import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
 import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkAlreadyPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
@@ -380,6 +383,74 @@ public class Claim
     
     // ========== Convenience methods ==========
     
+    public boolean removingWouldBeNonConsecutive(ChunkCoOrdinate chunk)
+    {
+        synchronized(chunks)
+        {
+            if(chunks.size() == 1)
+                return false;
+            
+            Collection<ChunkCoOrdinate> chunkGroupWithChunk = new HashSet<ChunkCoOrdinate>();
+            Collection<ChunkCoOrdinate> currentlyChecking = new HashSet<ChunkCoOrdinate>();
+            currentlyChecking.add(chunk);
+            
+            while(!currentlyChecking.isEmpty())
+            {
+                Set<ChunkCoOrdinate> newThisRound = new HashSet<ChunkCoOrdinate>();
+                
+                for(ChunkCoOrdinate current : currentlyChecking)
+                {
+                    Collection<ChunkCoOrdinate> toAdd = current.getAdjacentChunks();
+                    newThisRound.addAll(toAdd);
+                }
+                
+                newThisRound.retainAll(chunks);
+                newThisRound.removeAll(chunkGroupWithChunk);
+                newThisRound.removeAll(currentlyChecking);
+                
+                chunkGroupWithChunk.addAll(currentlyChecking);
+                currentlyChecking = newThisRound;
+            }
+            
+            if(chunkGroupWithChunk.size() == 1)
+                return false;
+            
+            Collection<ChunkCoOrdinate> chunkGroupWithoutChunk = new HashSet<ChunkCoOrdinate>();
+            
+            List<ChunkCoOrdinate> availableAdjacentChunks = new ArrayList<ChunkCoOrdinate>();
+            availableAdjacentChunks.addAll(chunk.getAdjacentChunks());
+            availableAdjacentChunks.retainAll(chunks);
+            currentlyChecking.add(availableAdjacentChunks.get(0));
+            
+            while(!currentlyChecking.isEmpty())
+            {
+                Set<ChunkCoOrdinate> newThisRound = new HashSet<ChunkCoOrdinate>();
+                
+                for(ChunkCoOrdinate current : currentlyChecking)
+                {
+                    Collection<ChunkCoOrdinate> toAdd = current.getAdjacentChunks();
+                    newThisRound.addAll(toAdd);
+                }
+                
+                newThisRound.retainAll(chunks);
+                newThisRound.removeAll(chunkGroupWithoutChunk);
+                newThisRound.removeAll(currentlyChecking);
+                newThisRound.remove(chunk);
+                
+                chunkGroupWithChunk.addAll(currentlyChecking);
+                currentlyChecking = newThisRound;
+            }
+            
+            return chunkGroupWithChunk.size() != chunkGroupWithoutChunk.size() + 1;
+        }
+    }
+    
+    public boolean addingWouldBeNonConsecutive(ChunkCoOrdinate chunk) throws ChunkAlreadyPresentException
+    {
+        synchronized(chunks)
+        { return !chunk.isNextTo(chunks); }
+    }
+    
     public boolean canFight(UUID attackingPlayerId, UUID playerBeingAttackedId)
     {
         if(!(settings.playerCombatIsAllowed()
@@ -580,6 +651,40 @@ public class Claim
     
     public boolean canRemoveChunksNonConsecutively(EntityPlayer player)
     { return canRemoveChunksNonConsecutively(player.getGameProfile().getId()); }
+    
+    public boolean canAddChunk(UUID playerId, ChunkCoOrdinate chunk) throws ChunkAlreadyPresentException
+    {
+        if(!canAddChunks(playerId))
+            return false;
+        
+        synchronized(chunks)
+        {
+            if(!addingWouldBeNonConsecutive(chunk))
+                return true;
+        }
+        
+        return Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.nonconsecutiveadd");
+    }
+    
+    public boolean canAddChunk(EntityPlayer player, ChunkCoOrdinate chunk) throws ChunkAlreadyPresentException
+    { return canAddChunk(player.getGameProfile().getId(), chunk); }
+    
+    public boolean canRemoveChunk(UUID playerId, ChunkCoOrdinate chunk) throws ChunkNotPresentException
+    {
+        if(!canRemoveChunks(playerId))
+            return false;
+        
+        synchronized(chunks)
+        {
+            if(!removingWouldBeNonConsecutive(chunk))
+                return true;
+        }
+        
+        return Permissions.hasPermission(playerId, "enkiprotection.claim.chunk.nonconsecutiveremove");
+    }
+    
+    public boolean canRemoveChunk(EntityPlayer player, ChunkCoOrdinate chunk) throws ChunkNotPresentException
+    { return canRemoveChunk(player.getGameProfile().getId(), chunk); }
     
     public boolean canSetWelcomeMessage(UUID playerId)
     { return canDo(playerId, "enkiprotection.claim.setting" + replaceTag + ".welcomemessage"); }
