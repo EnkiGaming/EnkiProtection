@@ -317,7 +317,13 @@ public class CmdClaim extends CommandBase
             return;
         }
         
-        /* To be continued */
+        if((sender instanceof EntityPlayer) && !claim.canDelete((EntityPlayer)sender))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permission to do that."));
+            return;
+        }
+        
+        
     }
     
     protected void handleClaimLeave(ICommandSender sender, List<String> args)

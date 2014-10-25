@@ -342,4 +342,32 @@ public class ClaimRegistry
         finally
         { claimsLock.unlock(); }
     }
+    
+    public boolean removeClaim(Claim claim)
+    {
+        claimsLock.lock();
+        
+        try
+        {
+            Claim removed = claims.remove(claim.getId());
+            
+            if(removed == null)
+                return false;
+            
+            claim.unclaimChunks();
+            
+        }
+        finally
+        { claimsLock.unlock(); }
+    }
+    
+    public boolean removeClaim(String claimName)
+    {
+        
+    }
+    
+    public boolean removeClaim(UUID claimId)
+    {
+        
+    }
 }

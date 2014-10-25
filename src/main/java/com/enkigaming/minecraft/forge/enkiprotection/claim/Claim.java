@@ -126,6 +126,7 @@ public class Claim
     protected ClaimPlayers players = new ClaimPlayers();
     protected ClaimPower power = new ClaimPower() {{ registerListenersToClaimPower(this); }};
     protected final Set<ChunkCoOrdinate> chunks = new HashSet<ChunkCoOrdinate>();
+    protected boolean isUsable = true;
     
     protected final Object nameLock = new Object();
     
@@ -380,6 +381,26 @@ public class Claim
     
     public boolean unclaimChunk(Chunk chunk)
     { return unclaimChunk(new ChunkCoOrdinate(chunk)); }
+    
+    public void unclaimChunks()
+    {
+        synchronized(chunks)
+        { chunks.clear(); }
+    }
+    
+    /**
+     * Makes claim unusable, unclaims chunks, and returns power grants.
+     */
+    public void cleanUp()
+    {
+        synchronized(chunks)
+        {
+            chunks.clear();
+            isUsable = false;
+        }
+        
+        
+    }
     
     // ========== Convenience methods ==========
     

@@ -241,6 +241,8 @@ public class ClaimPower
     protected static final String unixTimeTag = "(Unix time, milliseconds)";
     protected static final String separator = ": ";
     
+    protected boolean isUsable = true;
+    
     public TreeNode toTreeNode()
     {
         TreeNode baseNode = new TreeNode(powerTag + separator);
@@ -777,5 +779,15 @@ public class ClaimPower
     {
         synchronized(queuedRevocationExpirationListeners)
         { queuedRevocationExpirationListeners.add(listener); }
+    }
+    
+    protected void cleanUp()
+    {
+        synchronized(powerGrants)
+        {
+            
+            
+            isUsable = false;
+        }
     }
 }
