@@ -304,7 +304,7 @@ public class CmdClaim extends CommandBase
     {
         if(args.size() != 1)
         {
-            sendSenderUsage(sender, HelpOption.claimChunkRemove);
+            sendSenderUsage(sender, HelpOption.claimDelete);
             return;
         }
         
@@ -323,19 +323,71 @@ public class CmdClaim extends CommandBase
             return;
         }
         
+        if(!EnkiProtection.getInstance().getClaims().removeClaim(claim))
+        {
+            sender.addChatMessage(new ChatComponentText("Something weird happened. The claim may have been deleted twice rapidly."));
+            sender.addChatMessage(new ChatComponentText("See if it's still there and try again if it is."));
+            return;
+        }
         
+        sender.addChatMessage(new ChatComponentText("Claim deleted!"));
     }
     
     protected void handleClaimLeave(ICommandSender sender, List<String> args)
     {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return;
+        }
         
+        EntityPlayer player = (EntityPlayer)sender;
+        
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimLeave);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimLeave);
+            return;
+        }
+        
+        claim.getPlayerManager().makePlayerNonMember(player);
+        sender.addChatMessage(new ChatComponentText("Left claim!"));
     }
     
-    protected void handleClaimInvite(ICommandSender sender, List<String> args)
-    {}
-    
     protected void handleClaimAccept(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return;
+        }
+        
+        EntityPlayer player = (EntityPlayer)sender;
+        
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimLeave);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(EnkiProtection.getInstance().getPendingInvitations().markInvitationAsAccepted(player.getGameProfile().getId(), claim.getId()))
+        {
+            claim.getPlayerManager().makePlayerMember(player);
+            sender.addChatMessage(new ChatComponentText("Joined claim!"));
+        }
+        
+        sender.addChatMessage(new ChatComponentText("You have not been invited to that claim."));
+    }
     
     protected void handleClaimJoin(ICommandSender sender, List<String> args)
     {}
