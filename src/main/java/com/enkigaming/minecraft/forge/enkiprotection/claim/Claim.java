@@ -6,6 +6,7 @@ import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.playerpower.PlayerPower;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.ClaimRegistry;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
@@ -126,7 +127,6 @@ public class Claim
     protected ClaimPlayers players = new ClaimPlayers();
     protected ClaimPower power = new ClaimPower() {{ registerListenersToClaimPower(this); }};
     protected final Set<ChunkCoOrdinate> chunks = new HashSet<ChunkCoOrdinate>();
-    protected boolean isUsable = true;
     
     protected final Object nameLock = new Object();
     
@@ -170,7 +170,12 @@ public class Claim
         {
             @Override
             public void onQueuedRevocationExpiration(UUID playerId, int amount)
-            { EnkiProtection.getInstance().getClaimPowers().getForPlayer(playerId).notifyOfPowerGrantReturn(Claim.this, amount); }
+            {
+                PlayerPower pPower = EnkiProtection.getInstance().getClaimPowers().getForPlayer(playerId);
+                
+                if(pPower != null)
+                    pPower.notifyOfPowerGrantReturn(Claim.this, amount);
+            }
         });
         
         claimPower.setPowerUsedGetter(new ClaimPower.PowerUsedGetter()
@@ -389,17 +394,15 @@ public class Claim
     }
     
     /**
-     * Makes claim unusable, unclaims chunks, and returns power grants.
+     * 
      */
     public void cleanUp()
     {
-        synchronized(chunks)
-        {
-            chunks.clear();
-            isUsable = false;
-        }
+        // The only part that needs cleaned up is the ClaimPower, as it's double-referenced with the player claimpower
+        // registry. TO DO: Once events are implemented, make the claim instead fire an event, listened to by the
+        // claimpower registry, that removes listeners from the claim's events and removes any power grants.
         
-        
+        power.cleanUp();
     }
     
     // ========== Convenience methods ==========

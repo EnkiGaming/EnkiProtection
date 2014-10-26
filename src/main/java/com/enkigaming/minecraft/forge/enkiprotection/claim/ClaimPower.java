@@ -4,6 +4,8 @@ import com.enkigaming.mcforge.enkilib.EnkiLib;
 import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
 import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
+import com.enkigaming.minecraft.forge.enkiprotection.exceptions.ObjectFinishedWithException;
+import com.enkigaming.minecraft.forge.enkiprotection.playerpower.PlayerPower;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanAvailableException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.RevokingMorePowerThanGrantedException;
 import java.util.ArrayList;
@@ -254,6 +256,9 @@ public class ClaimPower
         
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             for(Entry<UUID, Integer> entry : powerGrants.entrySet())
             {
                 String lastRecordedName = EnkiLib.getLastRecordedNameOf(entry.getKey());
@@ -352,6 +357,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             int alreadyGranted = getPowerGrantedBy(playerId);
             
             powerGrants.put(playerId, alreadyGranted + amount);
@@ -365,6 +373,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             Integer powerGranted = powerGrants.get(playerId);
             
             if(powerGranted == null)
@@ -386,6 +397,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             Integer powerGranted = powerGrants.get(playerId);
             
             if(powerGranted == null)
@@ -402,6 +416,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             Map<UUID, Integer> grants = new HashMap<UUID, Integer>(powerGrants);
             
             for(Entry<UUID, QueuedRevocation> entry : revokeQueue.entrySet())
@@ -434,6 +451,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             int powerGranted = getPowerGrantedBy(playerId);
             
             if(amount > powerGranted)
@@ -464,6 +484,9 @@ public class ClaimPower
         
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             powerAvailable = getAvailablePower();
             powerGranted = getPowerGrantedBy(playerId);
             
@@ -489,6 +512,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             int availablePower = getAvailablePower();
             
             if(availablePower <= 0)
@@ -517,6 +543,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             QueuedRevocation revocation = revokeQueue.get(playerId);
             
             if(revocation == null)
@@ -533,6 +562,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             QueuedRevocation revocation = revokeQueue.get(playerId);
             int amountGrantedTotal = getPowerGrantedIncludingQueuedRevocationsBy(playerId);
             
@@ -570,6 +602,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             int amountGrantedNotCurrentlyRevoking = getPowerGrantedBy(playerId);
             
             if(amountGrantedNotCurrentlyRevoking < amountToAdd)
@@ -602,6 +637,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             QueuedRevocation revocation = revokeQueue.get(playerId);
             
             if(revocation == null)
@@ -626,6 +664,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             QueuedRevocation revocation = revokeQueue.get(playerId);
             int amountGrantedTotal = getPowerGrantedIncludingQueuedRevocationsBy(playerId);
             Date forceRevokeExpiry = new Date(new Date().getTime() + EnkiProtection.getInstance().getSettings().getNumberOfHoursUntilPowerRecovationExpires() * 3600000);
@@ -666,6 +707,9 @@ public class ClaimPower
         
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             for(Integer i : powerGrants.values())
                 power += i;
         }
@@ -679,6 +723,9 @@ public class ClaimPower
         
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             power = getTotalPower() - getPowerUsed();
             
             for(QueuedRevocation i : revokeQueue.values())
@@ -703,6 +750,9 @@ public class ClaimPower
         
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             powerGranted = powerGrants.get(playerId);
             
             if(powerGranted == null)
@@ -719,6 +769,9 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            if(!isUsable)
+                throw new ObjectFinishedWithException();
+            
             Collection<QueuedRevocation> toRemove = new ArrayList<QueuedRevocation>();
             
             for(QueuedRevocation queuedRevocation : revokeQueue.values())
@@ -757,7 +810,7 @@ public class ClaimPower
         return powerUsedGetter.getPowerUsed();
     }
     
-    protected void notifyPlayerPowerOfRevocation(UUID playerId, int amount)
+    protected void notifyPlayerPowerOfPowerReturn(UUID playerId, int amount)
     {
         synchronized(queuedRevocationExpirationListeners)
         {
@@ -785,8 +838,14 @@ public class ClaimPower
     {
         synchronized(powerGrants)
         {
+            // Remove revocation queue.
+            revokeQueue.clear();
             
+            // Go through powerGrants, returning grants to players.
+            for(Entry<UUID, Integer> entry : powerGrants.entrySet())
+                notifyPlayerPowerOfPowerReturn(entry.getKey(), entry.getValue());
             
+            powerGrants.clear();
             isUsable = false;
         }
     }

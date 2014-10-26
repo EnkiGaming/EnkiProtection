@@ -354,8 +354,8 @@ public class ClaimRegistry
             if(removed == null)
                 return false;
             
-            claim.unclaimChunks();
-            
+            removed.cleanUp();
+            return true;
         }
         finally
         { claimsLock.unlock(); }
@@ -363,11 +363,39 @@ public class ClaimRegistry
     
     public boolean removeClaim(String claimName)
     {
+        claimsLock.lock();
         
+        try
+        {
+            Claim removed = getClaim(claimName);
+            
+            if(removed == null)
+                return false;
+            
+            claims.remove(removed);
+            removed.cleanUp();
+            return true;
+        }
+        finally
+        { claimsLock.unlock(); }
     }
     
     public boolean removeClaim(UUID claimId)
     {
+        claimsLock.lock();
         
+        try
+        {
+            Claim removed = getClaim(claimId);
+            
+            if(removed == null)
+                return false;
+            
+            claims.remove(removed);
+            removed.cleanUp();
+            return true;
+        }
+        finally
+        { claimsLock.unlock(); }
     }
 }
