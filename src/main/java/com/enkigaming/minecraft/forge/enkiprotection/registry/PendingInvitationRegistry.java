@@ -6,6 +6,7 @@ import com.enkigaming.mcforge.enkilib.filehandling.CSVFileHandler.CSVRowMember;
 import com.enkigaming.mcforge.enkilib.filehandling.FileHandler;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedInvitationException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedRequestException;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -304,19 +305,34 @@ public class PendingInvitationRegistry
      */
     public boolean addInvitation(UUID playerId, UUID claimId) throws AcceptedRequestException
     {
+        /*
+         * - Check if there are any matching pending requests. If there are, accept them instead of logging the pending
+         *   invitation. Otherwise, continue
+         * 
+         * - Log the invitation as pending.
+         * 
+         * - Check whether a request was logged while the invitation was being logged. If one wasn't, return as normal.
+         *   If it was, continue.
+         * 
+         * - Remove both the logged request and the logged invitation, and accept them.
+         */
+        
         requestsLock.lock();
-        Entry<UUID, PendingRequest> requestToRemove = null;
+        PendingRequest requestToRemove = null;
         boolean renewed = false;
         
         try
         {
             for(Entry<UUID, PendingRequest> request : pendingRequests.entries())
                 if(request.getKey().equals(playerId) && request.getValue().getClaimId().equals(claimId))
-                    requestToRemove = request;
+                {
+                    requestToRemove = request.getValue();
+                    break;
+                }
             
             if(requestToRemove != null)
             {
-                pendingRequests.remove(requestToRemove.getKey(), requestToRemove.getValue());
+                pendingRequests.remove(playerId, requestToRemove);
                 throw new AcceptedRequestException();
             }
         }
@@ -332,6 +348,7 @@ public class PendingInvitationRegistry
                 {
                     invitation.renew();
                     renewed = true;
+                    break;
                 }
             
             if(!renewed)
@@ -348,12 +365,15 @@ public class PendingInvitationRegistry
         {
             for(Entry<UUID, PendingRequest> request : pendingRequests.entries())
                 if(request.getKey().equals(playerId) && request.getValue().getClaimId().equals(claimId))
-                    requestToRemove = request;
+                {
+                    requestToRemove = request.getValue();
+                    break;
+                }
             
             if(requestToRemove == null)
                 return true;
             
-            pendingRequests.remove(requestToRemove.getKey(), requestToRemove.getValue());
+            pendingRequests.remove(playerId, requestToRemove);
         }
         finally
         { requestsLock.lock(); }
@@ -378,16 +398,99 @@ public class PendingInvitationRegistry
         { invitationsLock.unlock(); }
     }
     
-    public boolean addRequest(UUID playerId, UUID claimId)
+    public boolean addRequest(UUID playerId, UUID claimId) throws AcceptedInvitationException
     {
+        /*
+         * - Check if there are any matching pending invitations. If there are, accept them instead of logging the
+         *   pending request. Otherwise, continue.
+         * 
+         * - Log the request as pending.
+         * 
+         * - Check whether an invitation was logged while the request was being logged. If one wasn't, return as normal.
+         *   If it was, continue.
+         * 
+         * - Remove both the logged request and the logged invitation, and accept them.
+         */
+        
+        invitationsLock.lock();
+        boolean renewed = false;
+        PendingInvitation inviteToRemove = null;
+        
+        try
+        {
+            for(Entry<UUID, PendingInvitation> invitation : pendingInvitations.entries())
+                if(invitation.getKey().equals(playerId) && invitation.getValue().getClaimId().equals(claimId))
+                {
+                    inviteToRemove = invitation.getValue();
+                    break;
+                }
+            
+            if(inviteToRemove != null)
+            {
+                pendingInvitations.remove(playerId, inviteToRemove);
+                throw new AcceptedInvitationException();
+            }
+        }
+        finally
+        { invitationsLock.unlock(); }
+        
+        requestsLock.lock();
+        
+        try
+        {
+            for(PendingRequest request : pendingRequests.get(playerId))
+                if(request.getClaimId().equals(claimId))
+                {
+                    request.renew();
+                    renewed = true;
+                    break;
+                }
+            
+            if(!renewed)
+                pendingRequests.put(playerId, new PendingRequest(playerId, claimId));
+        }
+        finally
+        { requestsLock.unlock(); }
+        
+        PendingRequest requestToRemove = null;
+        
         invitationsLock.lock();
         
         try
         {
+            for(Entry<UUID, PendingInvitation> invitation : pendingInvitations.entries())
+                if(invitation.getKey().equals(playerId) && invitation.getValue().getClaimId().equals(claimId))
+                {
+                    inviteToRemove = invitation.getValue();
+                    break;
+                }
             
+            if(requestToRemove == null)
+                return true;
+            
+            pendingInvitations.remove(playerId, inviteToRemove);
         }
         finally
-        { invitationsLock.unlock(); }
+        { invitationsLock.lock(); }
+        
+        requestsLock.lock();
+        
+        try
+        {
+            for(PendingRequest request : pendingRequests.get(playerId))
+                if(request.getClaimId().equals(claimId))
+                {
+                    requestToRemove = request;
+                    break;
+                }
+            
+            if(requestToRemove != null)
+                pendingRequests.remove(playerId, inviteToRemove);
+            
+            throw new AcceptedInvitationException();
+        }
+        finally
+        { requestsLock.unlock(); }
     }
     
     public void clearInvitations()
