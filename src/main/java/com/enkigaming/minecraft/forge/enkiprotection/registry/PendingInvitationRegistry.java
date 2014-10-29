@@ -181,8 +181,7 @@ public class PendingInvitationRegistry
     protected Collection<InvitationEventListener> invitationListeners = new ArrayList<InvitationEventListener>();
     protected Collection<RequestEventListener> requestListeners = new ArrayList<RequestEventListener>();
     
-    protected Lock invitationsLock = new ReentrantLock();
-    protected Lock requestsLock = new ReentrantLock();
+    protected Lock lock = new ReentrantLock();
     
     protected FileHandler fileHandler;
     
@@ -204,7 +203,7 @@ public class PendingInvitationRegistry
             @Override
             protected void preInterpretation()
             {
-                invitationsLock.lock();
+                lock.lock();
                 pendingInvitations.clear();
                 now = new Date();
             }
@@ -248,13 +247,13 @@ public class PendingInvitationRegistry
             protected void postInterpretation()
             {
                 now = null;
-                invitationsLock.unlock();
+                lock.unlock();
             }
 
             @Override
             protected void preSave()
             {
-                invitationsLock.lock();
+                lock.lock();
                 invitationList = new ArrayList<PendingInvitation>(pendingInvitations.values());
             }
 
@@ -289,7 +288,7 @@ public class PendingInvitationRegistry
             protected void postSave()
             {
                 invitationList = null;
-                invitationsLock.unlock();
+                lock.unlock();
             }
         };
     }
@@ -305,202 +304,88 @@ public class PendingInvitationRegistry
      */
     public boolean addInvitation(UUID playerId, UUID claimId) throws AcceptedRequestException
     {
-        /*
-         * - Check if there are any matching pending requests. If there are, accept them instead of logging the pending
-         *   invitation. Otherwise, continue
-         * 
-         * - Log the invitation as pending.
-         * 
-         * - Check whether a request was logged while the invitation was being logged. If one wasn't, return as normal.
-         *   If it was, continue.
-         * 
-         * - Remove both the logged request and the logged invitation, and accept them.
-         */
-        
-        requestsLock.lock();
-        PendingRequest requestToRemove = null;
-        boolean renewed = false;
+        lock.lock();
         
         try
         {
-            for(Entry<UUID, PendingRequest> request : pendingRequests.entries())
-                if(request.getKey().equals(playerId) && request.getValue().getClaimId().equals(claimId))
+            PendingRequest existingRequest = null;
+            
+            for(PendingRequest request : pendingRequests.get(playerId))
+                if(request.getClaimId().equals(claimId))
                 {
-                    requestToRemove = request.getValue();
+                    existingRequest = request;
                     break;
                 }
             
-            if(requestToRemove != null)
+            if(existingRequest != null)
             {
-                pendingRequests.remove(playerId, requestToRemove);
+                pendingRequests.remove(playerId, existingRequest);
                 throw new AcceptedRequestException();
             }
-        }
-        finally
-        { requestsLock.lock(); }
-        
-        invitationsLock.lock();
-        
-        try
-        {
-            for(PendingInvitation invitation : pendingInvitations.get(playerId))
-                if(invitation.getClaimId().equals(claimId))
+            
+            // Now guaranteed there isn't an existing request.
+            
+            for(PendingInvitation invite : pendingInvitations.get(playerId))
+                if(invite.getClaimId().equals(claimId))
                 {
-                    invitation.renew();
-                    renewed = true;
-                    break;
+                    invite.renew();
+                    return false;
                 }
             
-            if(!renewed)
-                pendingInvitations.put(playerId, new PendingInvitation(playerId, claimId));
+            // Now guaranteed that there isn't a matching invitation, so one should be added.
+            pendingInvitations.put(playerId, new PendingInvitation(playerId, claimId));
+            return true;
         }
         finally
-        { invitationsLock.unlock(); }
-        
-        PendingInvitation inviteToRemove = null;
-        
-        requestsLock.lock();
-        
-        try
-        {
-            for(Entry<UUID, PendingRequest> request : pendingRequests.entries())
-                if(request.getKey().equals(playerId) && request.getValue().getClaimId().equals(claimId))
-                {
-                    requestToRemove = request.getValue();
-                    break;
-                }
-            
-            if(requestToRemove == null)
-                return true;
-            
-            pendingRequests.remove(playerId, requestToRemove);
-        }
-        finally
-        { requestsLock.lock(); }
-        
-        invitationsLock.lock();
-        
-        try
-        {
-            for(PendingInvitation invitation : pendingInvitations.get(playerId))
-                if(invitation.getClaimId().equals(claimId))
-                {
-                    inviteToRemove = invitation;
-                    break;
-                }
-            
-            if(inviteToRemove != null)
-                pendingInvitations.remove(playerId, inviteToRemove);
-            
-            throw new AcceptedRequestException();
-        }
-        finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public boolean addRequest(UUID playerId, UUID claimId) throws AcceptedInvitationException
     {
-        /*
-         * - Check if there are any matching pending invitations. If there are, accept them instead of logging the
-         *   pending request. Otherwise, continue.
-         * 
-         * - Log the request as pending.
-         * 
-         * - Check whether an invitation was logged while the request was being logged. If one wasn't, return as normal.
-         *   If it was, continue.
-         * 
-         * - Remove both the logged request and the logged invitation, and accept them.
-         */
-        
-        invitationsLock.lock();
-        boolean renewed = false;
-        PendingInvitation inviteToRemove = null;
+        lock.lock();
         
         try
         {
-            for(Entry<UUID, PendingInvitation> invitation : pendingInvitations.entries())
-                if(invitation.getKey().equals(playerId) && invitation.getValue().getClaimId().equals(claimId))
+            PendingInvitation existingInvite = null;
+            
+            for(PendingInvitation invite : pendingInvitations.get(playerId))
+                if(invite.getClaimId().equals(claimId))
                 {
-                    inviteToRemove = invitation.getValue();
+                    existingInvite = invite;
                     break;
                 }
             
-            if(inviteToRemove != null)
+            if(existingInvite != null)
             {
-                pendingInvitations.remove(playerId, inviteToRemove);
+                pendingInvitations.remove(playerId, existingInvite);
                 throw new AcceptedInvitationException();
             }
-        }
-        finally
-        { invitationsLock.unlock(); }
-        
-        requestsLock.lock();
-        
-        try
-        {
+            
+            // Now guaranteed there isn't an existing request.
+            
             for(PendingRequest request : pendingRequests.get(playerId))
                 if(request.getClaimId().equals(claimId))
                 {
                     request.renew();
-                    renewed = true;
-                    break;
+                    return false;
                 }
             
-            if(!renewed)
-                pendingRequests.put(playerId, new PendingRequest(playerId, claimId));
+            // Now guaranteed that there isn't a matching invitation, so one should be added.
+            pendingRequests.put(playerId, new PendingRequest(playerId, claimId));
+            return true;
         }
         finally
-        { requestsLock.unlock(); }
-        
-        PendingRequest requestToRemove = null;
-        
-        invitationsLock.lock();
-        
-        try
-        {
-            for(Entry<UUID, PendingInvitation> invitation : pendingInvitations.entries())
-                if(invitation.getKey().equals(playerId) && invitation.getValue().getClaimId().equals(claimId))
-                {
-                    inviteToRemove = invitation.getValue();
-                    break;
-                }
-            
-            if(requestToRemove == null)
-                return true;
-            
-            pendingInvitations.remove(playerId, inviteToRemove);
-        }
-        finally
-        { invitationsLock.lock(); }
-        
-        requestsLock.lock();
-        
-        try
-        {
-            for(PendingRequest request : pendingRequests.get(playerId))
-                if(request.getClaimId().equals(claimId))
-                {
-                    requestToRemove = request;
-                    break;
-                }
-            
-            if(requestToRemove != null)
-                pendingRequests.remove(playerId, inviteToRemove);
-            
-            throw new AcceptedInvitationException();
-        }
-        finally
-        { requestsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public void clearInvitations()
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         { pendingInvitations.clear(); }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public void clearRequests()
@@ -510,7 +395,7 @@ public class PendingInvitationRegistry
     
     public Collection<UUID> getClaimsInvitedTo(UUID playerId)
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         {
@@ -522,7 +407,7 @@ public class PendingInvitationRegistry
             return claimIds;
         }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public Collection<UUID> getClaimsRequestedBy(UUID playerId)
@@ -532,7 +417,7 @@ public class PendingInvitationRegistry
     
     public Collection<UUID> getPlayersInvitedToClaim(UUID claimId)
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         {
@@ -545,7 +430,7 @@ public class PendingInvitationRegistry
             return playerIds;
         }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public boolean markRequestAsAccepted(UUID playerId, UUID claimId)
@@ -561,7 +446,7 @@ public class PendingInvitationRegistry
     // True if successful, false if no invitation to remove.
     public boolean markInvitationAsAccepted(UUID playerId, UUID claimId)
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         {
@@ -580,7 +465,7 @@ public class PendingInvitationRegistry
             pendingInvitations.remove(playerId, invitation);
         }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
         
         synchronized(invitationListeners)
         {
@@ -596,7 +481,7 @@ public class PendingInvitationRegistry
     // True if successful, false if no invitation to remove.
     public boolean markInvitationAsRejected(UUID playerId, UUID claimId)
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         {
@@ -615,7 +500,7 @@ public class PendingInvitationRegistry
             pendingInvitations.remove(playerId, invitation);
         }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
         
         synchronized(invitationListeners)
         {
@@ -642,7 +527,7 @@ public class PendingInvitationRegistry
     
     public void clearOutExpiredInvitations()
     {
-        invitationsLock.lock();
+        lock.lock();
         
         try
         {
@@ -653,7 +538,7 @@ public class PendingInvitationRegistry
                     pendingInvitations.remove(invitation.getPlayerId(), invitation.getClaimId());
         }
         finally
-        { invitationsLock.unlock(); }
+        { lock.unlock(); }
     }
     
     public void clearOutExpiredRequests()
