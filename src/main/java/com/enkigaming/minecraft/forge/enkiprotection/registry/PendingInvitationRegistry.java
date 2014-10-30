@@ -173,7 +173,7 @@ public class PendingInvitationRegistry
     { public abstract void onEvent(RequestEvent event); }
     
     public PendingInvitationRegistry(File saveFolder)
-    { fileHandler = makeFileHandler(saveFolder); }
+    { invitationFileHandler = makeInvitationFileHandler(saveFolder); }
     
     protected Multimap<UUID, PendingInvitation> pendingInvitations = HashMultimap.<UUID, PendingInvitation>create();
     protected Multimap<UUID, PendingRequest> pendingRequests = HashMultimap.<UUID, PendingRequest>create();
@@ -183,11 +183,12 @@ public class PendingInvitationRegistry
     
     protected Lock lock = new ReentrantLock();
     
-    protected FileHandler fileHandler;
+    protected FileHandler invitationFileHandler;
+    protected FileHandler requestFileHandler;
     
-    protected FileHandler makeFileHandler(File saveFolder)
+    protected FileHandler makeInvitationFileHandler(File saveFolder)
     {
-        return new CSVFileHandler("PendingInvitationRegistry", new File(saveFolder, "PendingInvitations.csv"), "Not all pending invitations could be loaded, those that could be were.")
+        return new CSVFileHandler("PendingInvitations", new File(saveFolder, "PendingInvitations.csv"), "Not all pending invitations could be loaded, those that could be were.")
         {
             List<PendingInvitation> invitationList;
             Date now;
@@ -293,8 +294,119 @@ public class PendingInvitationRegistry
         };
     }
     
-    public FileHandler getFileHandler()
-    { return fileHandler; }
+    protected FileHandler makeRequestFileHandler(File saveFolder)
+    {
+        return new CSVFileHandler("PendingRequests", new File(saveFolder, "PendingRequests.csv"), "Not all pending requests could be loaded, those that could be were.")
+        {
+            List<PendingRequest> requestList;
+            Date now;
+            
+            @Override
+            protected void onNoFileToInterpret()
+            {}
+
+            @Override
+            protected List<String> getColumnNames()
+            { return Arrays.asList("Claim ID", "Claim name", "Player ID", "Last recorded player name", "Expires (ms since epoch)"); }
+
+            @Override
+            protected void preInterpretation()
+            {
+                lock.lock();
+                pendingRequests.clear();
+                now = new Date();
+            }
+
+            @Override
+            protected boolean interpretRow(List<String> list)
+            {
+                if(list.size() != 5)
+                    return false;
+                
+                UUID claimId;
+                UUID playerId;
+                long expiryDateAsLong;
+                Date expiryDate;
+                
+                try
+                { expiryDateAsLong = Long.parseLong(list.get(4)); }
+                catch(NumberFormatException exception)
+                { return false; }
+                
+                expiryDate = new Date(expiryDateAsLong);
+                
+                if(now.after(expiryDate))
+                    return true;
+                
+                try
+                { claimId = UUID.fromString(list.get(0)); }
+                catch(IllegalArgumentException exception)
+                { return false; }
+                
+                try
+                { playerId = UUID.fromString(list.get(2)); }
+                catch(IllegalArgumentException exception)
+                { return false; }
+                
+                pendingRequests.put(playerId, new PendingRequest(playerId, claimId, expiryDate));
+                return true;
+            }
+
+            @Override
+            protected void postInterpretation()
+            {
+                now = null;
+                lock.unlock();
+            }
+
+            @Override
+            protected void preSave()
+            {
+                lock.lock();
+                requestList = new ArrayList<PendingRequest>(pendingRequests.values());
+            }
+
+            @Override
+            protected List<CSVRowMember> getRow(int i)
+            {
+                String playerName = EnkiLib.getLastRecordedNameOf(requestList.get(i).getPlayerId());
+                Claim claim = EnkiProtection.getInstance().getClaims().getClaim(requestList.get(i).getClaimId());
+                
+                CSVRowMember playerNameField;
+                
+                if(playerName == null)
+                    playerNameField = new CSVRowMember("", false);
+                else
+                    playerNameField = new CSVRowMember(playerName, true);
+                
+                CSVRowMember claimNameField;
+                
+                if(claim == null)
+                    claimNameField = new CSVRowMember("", false);
+                else
+                    claimNameField = new CSVRowMember(claim.getName(), true);
+                
+                return Arrays.asList(new CSVRowMember(requestList.get(i).getClaimId().toString(), false),
+                                     claimNameField,
+                                     new CSVRowMember(requestList.get(i).getPlayerId().toString(), false),
+                                     playerNameField,
+                                     new CSVRowMember(Long.toString(requestList.get(i).getExpiryDate().getTime()), false));
+            }
+
+            @Override
+            protected void postSave()
+            {
+                requestList = null;
+                lock.unlock();
+            }
+        };
+    }
+    
+    public FileHandler getInvitationFileHandler()
+    { return invitationFileHandler; }
+    
+    public FileHandler getRequestFileHandler()
+    { return requestFileHandler; }
     
     /**
      * Adds an invitation for the player to join the passed claim.
@@ -323,8 +435,6 @@ public class PendingInvitationRegistry
                 throw new AcceptedRequestException();
             }
             
-            // Now guaranteed there isn't an existing request.
-            
             for(PendingInvitation invite : pendingInvitations.get(playerId))
                 if(invite.getClaimId().equals(claimId))
                 {
@@ -332,7 +442,6 @@ public class PendingInvitationRegistry
                     return false;
                 }
             
-            // Now guaranteed that there isn't a matching invitation, so one should be added.
             pendingInvitations.put(playerId, new PendingInvitation(playerId, claimId));
             return true;
         }
@@ -361,8 +470,6 @@ public class PendingInvitationRegistry
                 throw new AcceptedInvitationException();
             }
             
-            // Now guaranteed there isn't an existing request.
-            
             for(PendingRequest request : pendingRequests.get(playerId))
                 if(request.getClaimId().equals(claimId))
                 {
@@ -370,7 +477,6 @@ public class PendingInvitationRegistry
                     return false;
                 }
             
-            // Now guaranteed that there isn't a matching invitation, so one should be added.
             pendingRequests.put(playerId, new PendingRequest(playerId, claimId));
             return true;
         }
@@ -390,7 +496,12 @@ public class PendingInvitationRegistry
     
     public void clearRequests()
     {
+        lock.lock();
         
+        try
+        { pendingRequests.clear(); }
+        finally
+        { lock.unlock(); }
     }
     
     public Collection<UUID> getClaimsInvitedTo(UUID playerId)
@@ -412,7 +523,19 @@ public class PendingInvitationRegistry
     
     public Collection<UUID> getClaimsRequestedBy(UUID playerId)
     {
+        lock.lock();
         
+        try
+        {
+            Collection<UUID> claimIds = new ArrayList<UUID>();
+            
+            for(PendingRequest request : pendingRequests.get(playerId))
+                claimIds.add(request.getClaimId());
+            
+            return claimIds;
+        }
+        finally
+        { lock.unlock(); }
     }
     
     public Collection<UUID> getPlayersInvitedToClaim(UUID claimId)
@@ -433,14 +556,90 @@ public class PendingInvitationRegistry
         { lock.unlock(); }
     }
     
+    public Collection<UUID> getPlayersRequestingToJoinClaim(UUID claimId)
+    {
+        lock.lock();
+        
+        try
+        {
+            Collection<UUID> playerIds = new ArrayList<UUID>();
+            
+            for(PendingRequest request : pendingRequests.values())
+                if(request.getClaimId().equals(claimId))
+                    playerIds.add(request.getPlayerId());
+            
+            return playerIds;
+        }
+        finally
+        { lock.unlock(); }
+    }
+    
     public boolean markRequestAsAccepted(UUID playerId, UUID claimId)
     {
+        lock.lock();
         
+        try
+        {
+            PendingRequest request = null;
+            
+            for(PendingRequest currentRequest : pendingRequests.get(playerId))
+                if(currentRequest.getClaimId().equals(claimId))
+                {
+                    request = currentRequest;
+                    break;
+                }
+            
+            if(request == null)
+                return false;
+            
+            pendingRequests.remove(playerId, request);
+        }
+        finally
+        { lock.unlock(); }
+        
+        synchronized(requestListeners)
+        {
+            RequestEvent args = new RequestEvent(playerId, claimId, true);
+            
+            for(RequestEventListener listener : requestListeners)
+                listener.onEvent(args);
+        }
+        
+        return true;
     }
     
     public boolean markRequestAsRejected(UUID playerId, UUID claimId)
     {
+        lock.lock();
         
+        try
+        {
+            PendingRequest request = null;
+            
+            for(PendingRequest currentRequest : pendingRequests.get(playerId))
+                if(currentRequest.getClaimId().equals(claimId))
+                {
+                    request = currentRequest;
+                    break;
+                }
+            
+            if(request == null)
+                return false;
+            
+            pendingRequests.remove(playerId, request);
+        }
+        finally
+        { lock.unlock(); }
+        
+        synchronized(requestListeners)
+        {
+            RequestEvent args = new RequestEvent(playerId, claimId, false);
+            
+            for(RequestEventListener listener : requestListeners)
+                listener.onEvent(args);
+        }
+        
+        return true;
     }
     
     // True if successful, false if no invitation to remove.
@@ -543,6 +742,17 @@ public class PendingInvitationRegistry
     
     public void clearOutExpiredRequests()
     {
+        lock.lock();
         
+        try
+        {
+            Collection<PendingInvitation> invitations = new ArrayList<PendingInvitation>(pendingInvitations.values());
+            
+            for(PendingInvitation invitation : invitations)
+                if(invitation.hasExpired())
+                    pendingInvitations.remove(invitation.getPlayerId(), invitation.getClaimId());
+        }
+        finally
+        { lock.unlock(); }
     }
 }
