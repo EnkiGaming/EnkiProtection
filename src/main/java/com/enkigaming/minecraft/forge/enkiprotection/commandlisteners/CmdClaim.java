@@ -5,6 +5,7 @@ import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.ClaimPlayers;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedInvitationException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.util.ArrayList;
@@ -242,6 +243,17 @@ public class CmdClaim extends CommandBase
         return true;
     }
     
+    protected boolean ensureIsPlayer(ICommandSender sender)
+    {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return false;
+        }
+        
+        return true;
+    }
+    
     // ========================================================================================================
     // ===============Below this are the handle methods, which handle every possible subcommand.===============
     // ========================================================================================================
@@ -274,11 +286,8 @@ public class CmdClaim extends CommandBase
     
     protected void handleClaimCreate(ICommandSender sender, List<String> args)
     {
-        if(!(sender instanceof EntityPlayer))
-        {
-            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+        if(!ensureIsPlayer(sender))
             return;
-        }
         
         if(args.size() != 1)
         {
@@ -339,11 +348,8 @@ public class CmdClaim extends CommandBase
     
     protected void handleClaimLeave(ICommandSender sender, List<String> args)
     {
-        if(!(sender instanceof EntityPlayer))
-        {
-            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+        if(!ensureIsPlayer(sender))
             return;
-        }
         
         EntityPlayer player = (EntityPlayer)sender;
         
@@ -368,11 +374,8 @@ public class CmdClaim extends CommandBase
     
     protected void handleClaimAccept(ICommandSender sender, List<String> args)
     {
-        if(!(sender instanceof EntityPlayer))
-        {
-            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+        if(!ensureIsPlayer(sender))
             return;
-        }
         
         EntityPlayer player = (EntityPlayer)sender;
         
@@ -402,7 +405,46 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimJoin(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(!ensureIsPlayer(sender))
+            return;
+        
+        EntityPlayer player = (EntityPlayer)sender;
+        
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimJoin);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimJoin);
+            return;
+        }
+        
+        if(!claim.canJoin(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permissions to join that claim."));
+            return;
+        }
+        
+        try
+        {
+            if(EnkiProtection.getInstance().getPendingInvitations().addRequest(player.getGameProfile().getId(), claim.getId()))
+                sender.addChatMessage(new ChatComponentText("Sent request to join claim!"));
+            else
+                sender.addChatMessage(new ChatComponentText("Renewed claim to join claim!"));
+        }
+        catch(AcceptedInvitationException exception)
+        {
+            claim.getPlayerManager().makePlayerMember(player);
+            sender.addChatMessage(new ChatComponentText("Joined claim!"));
+        }
+    }
     
     protected void handleClaimRename(ICommandSender sender, List<String> args)
     {}
