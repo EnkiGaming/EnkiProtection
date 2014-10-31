@@ -447,7 +447,36 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimRename(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 2)
+        {
+            sendSenderUsage(sender, HelpOption.claimRename);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimRename);
+            return;
+        }
+        
+        EntityPlayer player = null;
+        
+        if(sender instanceof EntityPlayer)
+            player = (EntityPlayer)sender;
+        
+        if(player != null && !claim.canRename(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permissions to rename that claim."));
+            return;
+        }
+        
+        claim.setName(args.get(1));
+        sender.addChatMessage(new ChatComponentText("Claim name set! " + args.get(1)));
+    }
     
     protected void handleClaimPlayer(ICommandSender sender, List<String> args)
     {}
