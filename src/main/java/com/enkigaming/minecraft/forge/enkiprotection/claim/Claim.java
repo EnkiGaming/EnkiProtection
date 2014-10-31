@@ -634,6 +634,12 @@ public class Claim
     public boolean canSetBanned(EntityPlayer player)
     { return canSetBanned(player.getGameProfile().getId()); }
     
+    public boolean canMakeOwner(UUID playerId)
+    { return canDo(playerId, "enkiprotection.own." + replaceTag + ".makeowner"); }
+    
+    public boolean canMakeOwner(EntityPlayer player)
+    { return canMakeOwner(player.getGameProfile().getId()); }
+    
     public boolean canAddChunks(UUID playerId)
     { return canDo(playerId, "enkiprotection.claim.chunk" + replaceTag + ".add"); }
     

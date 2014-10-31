@@ -53,7 +53,7 @@ public class CmdClaim extends CommandBase
         
         claimPlayer("Base command for player-related claim commands.",
                     "Claim player <Subcommand> <Claim name> <Player name>",
-                    "Ally, Ban"),
+                    "Invite, Cancelinvitation, Ally, Ban, Makeowner"),
         
         claimPlayerInvite("Invites another player to join the claim as a member.",
                           "Claim player invite <Claim name> <Player name>",
@@ -70,6 +70,10 @@ public class CmdClaim extends CommandBase
         claimPlayerBan("Bans a player from the claim.",
                        "Claim player ban <Claim name> <Player name>",
                        null),
+        
+        claimPlayerMakeowner("Makes a player the owner of a claim.",
+                             "Claim player makeowner <Claim name> <Player name>",
+                             null),
         
         claimChunk("Base command for chunk-related claim commands.",
                    "Claim chunk <Subcommand> <Claim name>",
@@ -380,10 +384,18 @@ public class CmdClaim extends CommandBase
         
         Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
         
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimAccept);
+            return;
+        }
+        
         if(EnkiProtection.getInstance().getPendingInvitations().markInvitationAsAccepted(player.getGameProfile().getId(), claim.getId()))
         {
             claim.getPlayerManager().makePlayerMember(player);
             sender.addChatMessage(new ChatComponentText("Joined claim!"));
+            return;
         }
         
         sender.addChatMessage(new ChatComponentText("You have not been invited to that claim."));
@@ -408,6 +420,9 @@ public class CmdClaim extends CommandBase
     {}
     
     protected void handleClaimPlayerBan(ICommandSender sender, List<String> args)
+    {}
+    
+    protected void handleClaimPlayerMakeowner(ICommandSender sender, List<String> args)
     {}
     
     protected void handleClaimChunk(ICommandSender sender, List<String> args)

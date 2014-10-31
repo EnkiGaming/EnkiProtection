@@ -31,6 +31,7 @@ Claim Player Invite           <Claimname> <Playername> - Invites player to join 
 Claim Player CancelInvitation <Claimname> <Playername> - Cancels pending invitations to a player for a claim.
 Claim Player Ally             <Claimname> <Playername> - Sets the player as an ally of the claim.
 Claim Player Ban              <Claimname> <Playername> - Bans the player from the claim.
+Claim Player MakeOwner        <Claimname> <Playername> - Transfers ownership to another player.
 
 Claim Chunk Add        <Claimname> - Adds the chunk the player is in as a claim.
 Claim Chunk Remove     <Claimname> - Removes the chunk the player is in as a claim.
