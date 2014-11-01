@@ -479,7 +479,22 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimPlayer(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() <= 0)
+            sendSenderUsage(sender, HelpOption.claimPlayer);
+        else if(args.get(0).equalsIgnoreCase("invite"))
+            handleClaimPlayerInvite(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("cancelinvitation"))
+            handleClaimPlayerCancelinvitation(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("ally"))
+            handleClaimPlayerAlly(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("ban"))
+            handleClaimPlayerBan(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("makeowner"))
+            handleClaimPlayerMakeowner(sender, args.subList(1, args.size()));
+        else
+            sendSenderUsage(sender, HelpOption.claimPlayer);
+    }
     
     protected void handleClaimPlayerInvite(ICommandSender sender, List<String> args)
     {}
