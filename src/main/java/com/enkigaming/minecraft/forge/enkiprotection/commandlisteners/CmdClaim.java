@@ -1,16 +1,19 @@
 package com.enkigaming.minecraft.forge.enkiprotection.commandlisteners;
 
+import com.enkigaming.mcforge.enkilib.EnkiLib;
 import com.enkigaming.minecraft.forge.enkiprotection.EnkiProtection;
 import com.enkigaming.minecraft.forge.enkiprotection.Permissions;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.ClaimPlayers;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedInvitationException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedRequestException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minecraft.command.CommandBase;
@@ -497,7 +500,53 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimPlayerInvite(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 2)
+        {
+            sendSenderUsage(sender, HelpOption.claimRename);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimPlayerInvite);
+            return;
+        }
+        
+        EntityPlayer player = null;
+        
+        if(sender instanceof EntityPlayer)
+            player = (EntityPlayer)sender;
+        
+        if(player != null && !claim.canInvite(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permissions to invite players to that claim."));
+            return;
+        }
+        
+        UUID invitedPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+        
+        if(invitedPlayerId == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
+            sendSenderUsage(sender, HelpOption.claimPlayerInvite);
+            return;
+        }
+        try
+        {
+            if(EnkiProtection.getInstance().getPendingInvitations().addInvitation(invitedPlayerId, claim.getId()))
+                sender.addChatMessage(new ChatComponentText("Player invited!"));
+            else
+                sender.addChatMessage(new ChatComponentText("Player invite renewed!"));
+        }
+        catch(AcceptedRequestException ex)
+        {
+            sender.addChatMessage(new ChatComponentText("Player has joined!"));
+        }
+    }
     
     protected void handleClaimPlayerCancelinvitation(ICommandSender sender, List<String> args)
     {}
