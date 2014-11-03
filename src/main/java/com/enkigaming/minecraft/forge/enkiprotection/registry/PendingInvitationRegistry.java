@@ -484,6 +484,26 @@ public class PendingInvitationRegistry
         { lock.unlock(); }
     }
     
+    public boolean removeInvitation(UUID playerId, UUID claimId)
+    {
+        lock.lock();
+        
+        try
+        { return pendingInvitations.remove(playerId, claimId); }
+        finally
+        { lock.unlock(); }
+    }
+    
+    public boolean removeRequest(UUID playerId, UUID claimId)
+    {
+        lock.lock();
+        
+        try
+        { return pendingRequests.remove(playerId, claimId); }
+        finally
+        { lock.unlock(); }
+    }
+    
     public void clearInvitations()
     {
         lock.lock();

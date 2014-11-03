@@ -535,6 +535,7 @@ public class CmdClaim extends CommandBase
             sendSenderUsage(sender, HelpOption.claimPlayerInvite);
             return;
         }
+        
         try
         {
             if(EnkiProtection.getInstance().getPendingInvitations().addInvitation(invitedPlayerId, claim.getId()))
@@ -544,12 +545,53 @@ public class CmdClaim extends CommandBase
         }
         catch(AcceptedRequestException ex)
         {
+            claim.getPlayerManager().makePlayerMember(player);
             sender.addChatMessage(new ChatComponentText("Player has joined!"));
         }
     }
     
     protected void handleClaimPlayerCancelinvitation(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 2)
+        {
+            sendSenderUsage(sender, HelpOption.claimPlayerCancelinvitation);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimPlayerCancelinvitation);
+            return;
+        }
+        
+        EntityPlayer player = null;
+        
+        if(sender instanceof EntityPlayer)
+            player = (EntityPlayer)sender;
+        
+        if(player != null && !claim.canInvite(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permissions to cancel invitations to that claim."));
+            return;
+        }
+        
+        UUID invitedPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+        
+        if(invitedPlayerId == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
+            sendSenderUsage(sender, HelpOption.claimPlayerCancelinvitation);
+            return;
+        }
+        
+        if(EnkiProtection.getInstance().getPendingInvitations().removeInvitation(invitedPlayerId, claim.getId()))
+            sender.addChatMessage(new ChatComponentText("Invitation cancelled!"));
+        else
+            sender.addChatMessage(new ChatComponentText("No invitation to cancel."));
+    }
     
     protected void handleClaimPlayerAlly(ICommandSender sender, List<String> args)
     {}
