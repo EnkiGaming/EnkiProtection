@@ -594,7 +594,45 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimPlayerAlly(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 2)
+        {
+            sendSenderUsage(sender, HelpOption.claimPlayerAlly);
+            return;
+        }
+        
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+        
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimPlayerAlly);
+            return;
+        }
+        
+        EntityPlayer player = null;
+        
+        if(sender instanceof EntityPlayer)
+            player = (EntityPlayer)sender;
+        
+        if(player != null && !claim.canSetAllies(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permissions to make other players allie of that claim."));
+            return;
+        }
+        
+        UUID allyPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+        
+        if(allyPlayerId == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
+            sendSenderUsage(sender, HelpOption.claimPlayerAlly);
+            return;
+        }
+        
+        claim.getPlayerManager().makePlayerAlly(allyPlayerId);
+        sender.addChatMessage(new ChatComponentText("The player is now an ally!"));
+    }
     
     protected void handleClaimPlayerBan(ICommandSender sender, List<String> args)
     {}
@@ -660,7 +698,9 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimChunkAutoadd(ICommandSender sender, List<String> args)
-    {}
+    {
+    
+    }
     
     protected void handleClaimChunkAutoremove(ICommandSender sender, List<String> args)
     {}
