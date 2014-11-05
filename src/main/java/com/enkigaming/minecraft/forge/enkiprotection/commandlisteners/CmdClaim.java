@@ -662,16 +662,16 @@ public class CmdClaim extends CommandBase
             return;
         }
         
-        UUID allyPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+        UUID bannedPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
         
-        if(allyPlayerId == null)
+        if(bannedPlayerId == null)
         {
             sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
             sendSenderUsage(sender, HelpOption.claimPlayerBan);
             return;
         }
         
-        claim.getPlayerManager().makePlayerAlly(allyPlayerId);
+        claim.getPlayerManager().makePlayerAlly(bannedPlayerId);
         sender.addChatMessage(new ChatComponentText("The player is now banned!"));
     }
     
@@ -703,20 +703,34 @@ public class CmdClaim extends CommandBase
             return;
         }
 
-        UUID allyPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+        UUID ownerPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
 
-        if(allyPlayerId == null)
+        if(ownerPlayerId == null)
         {
             sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
             sendSenderUsage(sender, HelpOption.claimPlayerMakeowner);
             return;
         }
         
-        
+        claim.getPlayerManager().setOwner(ownerPlayerId);
+        sender.addChatMessage(new ChatComponentText("Owner set!"));
     }
     
     protected void handleClaimChunk(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() <= 0)
+            sendSenderUsage(sender, HelpOption.claimChunk);
+        else if(args.get(0).equalsIgnoreCase("add"))
+            handleClaimChunkAdd(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("remove"))
+            handleClaimChunkRemove(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("autoadd"))
+            handleClaimChunkAutoadd(sender, args.subList(1, args.size()));
+        else if(args.get(0).equalsIgnoreCase("autoremove"))
+            handleClaimChunkAutoremove(sender, args.subList(1, args.size()));
+        else
+            sendSenderUsage(sender, HelpOption.claimChunk);
+    }
     
     protected void handleClaimChunkAdd(ICommandSender sender, List<String> args)
     {}
