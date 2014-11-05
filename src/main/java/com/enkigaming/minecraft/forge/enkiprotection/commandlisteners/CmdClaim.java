@@ -617,7 +617,7 @@ public class CmdClaim extends CommandBase
         
         if(player != null && !claim.canSetAllies(player))
         {
-            sender.addChatMessage(new ChatComponentText("You don't have permissions to make other players allies of that claim."));
+            sender.addChatMessage(new ChatComponentText("You don't have permission to make other players allies of that claim."));
             return;
         }
         
@@ -658,7 +658,7 @@ public class CmdClaim extends CommandBase
         
         if(player != null && !claim.canSetAllies(player))
         {
-            sender.addChatMessage(new ChatComponentText("You don't have permissions to ban players from that claim."));
+            sender.addChatMessage(new ChatComponentText("You don't have permission to ban players from that claim."));
             return;
         }
         
@@ -676,7 +676,44 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimPlayerMakeowner(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(args.size() != 2)
+        {
+            sendSenderUsage(sender, HelpOption.claimPlayerMakeowner);
+            return;
+        }
+
+        Claim claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
+
+        if(claim == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
+            sendSenderUsage(sender, HelpOption.claimPlayerMakeowner);
+            return;
+        }
+
+        EntityPlayer player = null;
+
+        if(sender instanceof EntityPlayer)
+            player = (EntityPlayer) sender;
+
+        if(player != null && !claim.canSetAllies(player))
+        {
+            sender.addChatMessage(new ChatComponentText("You don't have permission to set the owner of that claim."));
+            return;
+        }
+
+        UUID allyPlayerId = EnkiLib.getInstance().getUsernameCache().getLastRecordedUUIDForName(args.get(1));
+
+        if(allyPlayerId == null)
+        {
+            sender.addChatMessage(new ChatComponentText("No player with the name " + args.get(0) + " has been recorded."));
+            sendSenderUsage(sender, HelpOption.claimPlayerMakeowner);
+            return;
+        }
+        
+        
+    }
     
     protected void handleClaimChunk(ICommandSender sender, List<String> args)
     {}
