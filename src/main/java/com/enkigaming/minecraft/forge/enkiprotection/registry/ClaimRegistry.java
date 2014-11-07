@@ -478,23 +478,85 @@ public class ClaimRegistry
     
     public void removeChunkFromClaim(Claim claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
     {
+        if(claim == null)
+            throw new NullArgumentException("claim");
         
+        if(chunk == null)
+            throw new NullArgumentException("chunk");
+        
+        claimsLock.lock();
+        
+        try
+        {
+            if(!claims.containsKey(claim.getId()))
+                throw new IllegalArgumentException("Claim not in registry: " + claim.getName() + " - " + claim.getId().toString());
+            
+            if(!claim.unclaimChunk(chunk))
+                throw new ChunkNotInClaimException(chunk, claim);
+        }
+        finally
+        { claimsLock.unlock(); }
     }
     
     public void removeChunkFromClaim(UUID claimId, ChunkCoOrdinate chunk) throws ChunkNotInClaimException,
                                                                                  NoClaimWithMatchingIdException
     {
+        if(claimId == null)
+            throw new NullArgumentException("claimId");
         
+        claimsLock.lock();
+        
+        try
+        {
+            Claim claim = getClaim(claimId);
+
+            if(claim == null)
+                throw new NoClaimWithMatchingIdException(claimId);
+
+            removeChunkFromClaim(claim, chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
     }
     
     public void removeChunkFromClaim(String claimName, ChunkCoOrdinate chunk) throws ChunkNotInClaimException,
                                                                                      NoClaimWithMatchingNameException
     {
+        if(claimName == null)
+            throw new NullArgumentException("claimName");
         
+        claimsLock.lock();
+        
+        try
+        {
+            Claim claim = getClaim(claimName);
+
+            if(claim == null)
+                throw new NoClaimWithMatchingNameException(claimName);
+
+            removeChunkFromClaim(claim, chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
     }
     
     public void removeChunkFromClaim(ChunkCoOrdinate chunk) throws ChunkNotInClaimException
     {
+        if(chunk == null)
+            throw new NullArgumentException("chunk");
         
+        claimsLock.lock();
+        
+        try
+        {
+            Claim claim = getClaimAtChunk(chunk);
+            
+            if(claim == null)
+                throw new ChunkNotInClaimException(chunk, null);
+            
+            removeChunkFromClaim(claim, chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
     }
 }

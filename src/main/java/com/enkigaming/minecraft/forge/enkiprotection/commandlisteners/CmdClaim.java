@@ -9,6 +9,7 @@ import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPr
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedInvitationException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedRequestException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NoClaimWithMatchingNameException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
@@ -778,40 +779,25 @@ public class CmdClaim extends CommandBase
         }
         
         EntityPlayer player = (EntityPlayer)sender;
-        Claim claim;
-        
-        if(args.isEmpty())
-            claim = EnkiProtection.getInstance().getClaims().getClaimAtBlock(player.serverPosX, player.serverPosZ, player.dimension);
-        else
-            claim = EnkiProtection.getInstance().getClaims().getClaim(args.get(0));
-        
         ChunkCoordinates playerLocation = player.getPlayerCoordinates();
         ChunkCoOrdinate playerChunk = new ChunkCoOrdinate(playerLocation.posX / 16, playerLocation.posZ / 16, player.dimension);
         
-        if(claim == null)
+        if(args.isEmpty())
         {
-            if(args.isEmpty())
-                sender.addChatMessage(new ChatComponentText("No claim with the name " + args.get(0) + " exists."));
-            else
-                sender.addChatMessage(new ChatComponentText("Current chunk is not in a claim."));
-                
-            sendSenderUsage(sender, HelpOption.claimChunkRemove);
-            return;
+            try
+            { EnkiProtection.getInstance().getClaims().removeChunkFromClaim(playerChunk); }
+            catch(ChunkNotInClaimException ex)
+            { sender.addChatMessage(new ChatComponentText("That chunk isn't currently in a claim.")); }
         }
-        
-        try
+        else
         {
-            if(!claim.canRemoveChunk(player, playerChunk))
-            {
-                sender.addChatMessage(new ChatComponentText("You don't have permission to do that."));
-                return;
-            }
+            try
+            { EnkiProtection.getInstance().getClaims().removeChunkFromClaim(args.get(0), playerChunk); }
+            catch(ChunkNotInClaimException ex)
+            { sender.addChatMessage(new ChatComponentText("That chunk is not in the specified claim.")); }
+            catch(NoClaimWithMatchingNameException ex)
+            { sender.addChatMessage(new ChatComponentText("No claim with that name exists.")); }
         }
-        catch(ChunkNotPresentException ex)
-        { sender.addChatMessage(new ChatComponentText("That chunk is not currently in the claim.")); }
-        
-        claim.unclaimChunk(playerChunk);
-        sender.addChatMessage(new ChatComponentText("Chunk un-claimed!"));
     }
     
     protected void handleClaimChunkAutoadd(ICommandSender sender, List<String> args)
