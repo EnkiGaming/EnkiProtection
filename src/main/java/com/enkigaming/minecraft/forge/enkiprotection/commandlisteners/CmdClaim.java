@@ -8,7 +8,10 @@ import com.enkigaming.minecraft.forge.enkiprotection.claim.ClaimPlayers;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.exceptions.ChunkNotPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedInvitationException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.AcceptedRequestException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NoClaimWithMatchingNameException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -733,7 +736,32 @@ public class CmdClaim extends CommandBase
     }
     
     protected void handleClaimChunkAdd(ICommandSender sender, List<String> args)
-    {}
+    {
+        if(!(sender instanceof EntityPlayer))
+        {
+            sender.addChatMessage(new ChatComponentText("This command can only be performed by players."));
+            return;
+        }
+        
+        if(args.size() != 1)
+        {
+            sendSenderUsage(sender, HelpOption.claimChunkAdd);
+            return;
+        }
+        
+        EntityPlayer player = (EntityPlayer)sender;
+        ChunkCoordinates playerLocation = player.getPlayerCoordinates();
+        ChunkCoOrdinate playerChunk = new ChunkCoOrdinate(playerLocation.posX / 16, playerLocation.posZ / 16, player.dimension);
+        
+        try
+        { EnkiProtection.getInstance().getClaims().addChunkToClaim(args.get(0), playerChunk); }
+        catch(ChunkAlreadyClaimedException ex)
+        { sender.addChatMessage(new ChatComponentText("That chunk is already claimed by: " + ex.getClaimChunkAlreadyBelongsTo().getName())); }
+        catch(NotEnoughClaimPowerToClaimException ex)
+        { sender.addChatMessage(new ChatComponentText("Not enough claim power. Need an additional " + String.valueOf(ex.getClaimPowerRequired() - ex.getClaimPower()) + " power.")); }
+        catch(NoClaimWithMatchingNameException ex)
+        { sender.addChatMessage(new ChatComponentText("No claim with that name exists.")); }
+    }
     
     protected void handleClaimChunkRemove(ICommandSender sender, List<String> args)
     {

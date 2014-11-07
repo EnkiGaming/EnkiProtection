@@ -1,12 +1,18 @@
 package com.enkigaming.minecraft.forge.enkiprotection.registry;
 
+import com.enkigaming.mcforge.enkilib.exceptions.NullArgumentException;
 import com.enkigaming.mcforge.enkilib.exceptions.UnableToParseTreeNodeException;
 import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler.TreeNode;
 import com.enkigaming.minecraft.forge.enkiprotection.claim.Claim;
 import com.enkigaming.mcforge.enkilib.filehandling.FileHandler;
 import com.enkigaming.mcforge.enkilib.filehandling.TreeFileHandler;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkAlreadyClaimedException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ChunkNotInClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimIdAlreadyPresentException;
 import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.ClaimNameAlreadyPresentException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NoClaimWithMatchingIdException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NoClaimWithMatchingNameException;
+import com.enkigaming.minecraft.forge.enkiprotection.registry.exceptions.NotEnoughClaimPowerToClaimException;
 import com.enkigaming.minecraft.forge.enkiprotection.utils.ChunkCoOrdinate;
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -397,5 +404,97 @@ public class ClaimRegistry
         }
         finally
         { claimsLock.unlock(); }
+    }
+    
+    public void addChunkToClaim(Claim claim, ChunkCoOrdinate chunk) throws ChunkAlreadyClaimedException,
+                                                                           NotEnoughClaimPowerToClaimException
+    {
+        if(claim == null)
+            throw new NullArgumentException("claim");
+        
+        if(chunk == null)
+            throw new NullArgumentException("chunk");
+        
+        claimsLock.lock();
+        
+        try
+        {
+            if(!claims.containsKey(claim.getId()))
+                throw new IllegalArgumentException("Claim not in registry: " + claim.getName() + " - " + claim.getId().toString());
+            
+            for(Claim currentClaim : claims.values())
+                if(currentClaim.hasChunk(chunk))
+                    throw new ChunkAlreadyClaimedException(currentClaim, chunk);
+            
+            claim.claimChunk(chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
+    }
+    
+    public void addChunkToClaim(UUID claimId, ChunkCoOrdinate chunk) throws ChunkAlreadyClaimedException,
+                                                                            NotEnoughClaimPowerToClaimException,
+                                                                            NoClaimWithMatchingIdException
+    {
+        if(claimId == null)
+            throw new NullArgumentException("claimId");
+        
+        claimsLock.lock();
+        
+        try
+        {
+            Claim claim = getClaim(claimId);
+
+            if(claim == null)
+                throw new NoClaimWithMatchingIdException(claimId);
+
+            addChunkToClaim(claim, chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
+    }
+    
+    public void addChunkToClaim(String claimName, ChunkCoOrdinate chunk) throws ChunkAlreadyClaimedException,
+                                                                                NotEnoughClaimPowerToClaimException,
+                                                                                NoClaimWithMatchingNameException
+    {
+        if(claimName == null)
+            throw new NullArgumentException("claimName");
+        
+        claimsLock.lock();
+        
+        try
+        {
+            Claim claim = getClaim(claimName);
+
+            if(claim == null)
+                throw new NoClaimWithMatchingNameException(claimName);
+
+            addChunkToClaim(claim, chunk);
+        }
+        finally
+        { claimsLock.unlock(); }
+    }
+    
+    public void removeChunkFromClaim(Claim claim, ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {
+        
+    }
+    
+    public void removeChunkFromClaim(UUID claimId, ChunkCoOrdinate chunk) throws ChunkNotInClaimException,
+                                                                                 NoClaimWithMatchingIdException
+    {
+        
+    }
+    
+    public void removeChunkFromClaim(String claimName, ChunkCoOrdinate chunk) throws ChunkNotInClaimException,
+                                                                                     NoClaimWithMatchingNameException
+    {
+        
+    }
+    
+    public void removeChunkFromClaim(ChunkCoOrdinate chunk) throws ChunkNotInClaimException
+    {
+        
     }
 }
